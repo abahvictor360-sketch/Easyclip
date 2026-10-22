@@ -100,7 +100,8 @@ def _collect_fonts_from_dir(font_dir: Path, scope: str) -> list[dict[str, Any]]:
 
     local = scope == "local"
     fonts: list[dict[str, Any]] = []
-    for font_path in sorted(font_dir.iterdir()):
+    # Linux keeps installed fonts in nested folders (/usr/share/fonts/truetype/...).
+    for font_path in sorted(font_dir.rglob("*") if local else font_dir.iterdir()):
         extension = font_path.suffix.lower()
         if extension not in SUPPORTED_FONT_EXTENSIONS or not font_path.is_file():
             continue

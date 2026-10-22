@@ -15,7 +15,9 @@ services:
       - CLIP_MAX_SECONDS=${CLIP_MAX_SECONDS:-180}
       - CLIP_IDEAL_MIN_SECONDS=${CLIP_IDEAL_MIN_SECONDS:-100}
       - CLIP_IDEAL_MAX_SECONDS=${CLIP_IDEAL_MAX_SECONDS:-150}
-      # Fonts installed on this computer (per-user first, then Windows).
+      # Fonts installed on the host. On Windows set HOST_USER_FONTS_DIR and
+      # HOST_SYSTEM_FONTS_DIR in .env; on Linux they default to ./fonts-local
+      # and /usr/share/fonts.
       - LOCAL_FONT_DIRS=/host-fonts/user:/host-fonts/windows
       # Music and sound effects: ./audio/music, ./audio/sfx, plus CC0 Freesound search.
       - FREESOUND_API_KEY=${FREESOUND_API_KEY:-}
@@ -25,8 +27,8 @@ services:
     volumes:
       - ./cookies:/app/cookies
       - ./audio:/app/audio
-      - C:/Users/XPEL GRAPHICS/AppData/Local/Microsoft/Windows/Fonts:/host-fonts/user:ro
-      - C:/Windows/Fonts:/host-fonts/windows:ro
+      - ${HOST_USER_FONTS_DIR:-./fonts-local}:/host-fonts/user:ro
+      - ${HOST_SYSTEM_FONTS_DIR:-/usr/share/fonts}:/host-fonts/windows:ro
     depends_on:
       - pot
   worker:
@@ -38,7 +40,9 @@ services:
       - CLIP_MAX_SECONDS=${CLIP_MAX_SECONDS:-180}
       - CLIP_IDEAL_MIN_SECONDS=${CLIP_IDEAL_MIN_SECONDS:-100}
       - CLIP_IDEAL_MAX_SECONDS=${CLIP_IDEAL_MAX_SECONDS:-150}
-      # Fonts installed on this computer (per-user first, then Windows).
+      # Fonts installed on the host. On Windows set HOST_USER_FONTS_DIR and
+      # HOST_SYSTEM_FONTS_DIR in .env; on Linux they default to ./fonts-local
+      # and /usr/share/fonts.
       - LOCAL_FONT_DIRS=/host-fonts/user:/host-fonts/windows
       # Music and sound effects: ./audio/music, ./audio/sfx, plus CC0 Freesound search.
       - FREESOUND_API_KEY=${FREESOUND_API_KEY:-}
@@ -48,8 +52,8 @@ services:
     volumes:
       - ./cookies:/app/cookies
       - ./audio:/app/audio
-      - C:/Users/XPEL GRAPHICS/AppData/Local/Microsoft/Windows/Fonts:/host-fonts/user:ro
-      - C:/Windows/Fonts:/host-fonts/windows:ro
+      - ${HOST_USER_FONTS_DIR:-./fonts-local}:/host-fonts/user:ro
+      - ${HOST_SYSTEM_FONTS_DIR:-/usr/share/fonts}:/host-fonts/windows:ro
     depends_on:
       - pot
   pot:
