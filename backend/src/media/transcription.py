@@ -281,7 +281,9 @@ def transcribe_with_youtube_captions(video_url: str) -> Optional[str]:
             "skip_download": True,
             "outtmpl": str(temp_dir / video_id),
         }
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        from ..youtube_utils import apply_ytdlp_cookies
+
+        with yt_dlp.YoutubeDL(apply_ytdlp_cookies(ydl_opts)) as ydl:
             ydl.download([video_url])
 
         if subs_path.exists():

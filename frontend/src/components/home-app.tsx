@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   AlertCircle, ArrowRight, ArrowUp, Captions, CaptionsOff, Check, ChevronDown, Crop, FileVideo,
-  Loader2, Paintbrush, Paperclip, Upload, Wand2, X, Youtube,
+  Loader2, Music, Paintbrush, Paperclip, Upload, Wand2, X, Youtube,
 } from "lucide-react";
 import { CaptionSizeControl } from "@/components/caption-size-control";
 import { FONT_SEARCH_THRESHOLD, getYouTubeThumbnailUrl, uploadVideoFile } from "@/lib/video-upload";
@@ -94,6 +94,9 @@ export default function HomeApp() {
   const [pauseThresholdMs, setPauseThresholdMs] = useState("1200");
   const [removeFillerWords, setRemoveFillerWords] = useState(true);
   const [filteredWords, setFilteredWords] = useState("");
+  const [backgroundMusic, setBackgroundMusic] = useState(false);
+  const [soundEffects, setSoundEffects] = useState(false);
+  const soundCount = Number(backgroundMusic) + Number(soundEffects);
 
   const [recent, setRecent] = useState<GenerationSummary[] | null>(null);
   const [billingSummary, updateBillingSummary] = useBillingSummary(Boolean(session?.user?.id));
@@ -253,6 +256,8 @@ export default function HomeApp() {
           pause_threshold_ms: normalizedPauseThreshold,
           remove_filler_words: removeFillerWords,
           filtered_words: normalizedFilteredWords,
+          background_music: backgroundMusic,
+          sound_effects: soundEffects,
         }),
       });
 
@@ -574,6 +579,35 @@ export default function HomeApp() {
                   <div className="space-y-1.5">
                     <label htmlFor="filtered-words" className="text-xs font-medium text-muted-foreground">{t("extraWords")}</label>
                     <Input id="filtered-words" value={filteredWords} onChange={(e) => setFilteredWords(e.target.value)} placeholder={t("extraWordsPlaceholder")} className="h-8" />
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Chip disabled={controlsDisabled} active={soundCount > 0}>
+                    <Music className="size-3.5" />{t("sound")}{soundCount > 0 && <span className="rounded-full bg-foreground px-1.5 text-[10px] text-background">{soundCount}</span>}
+                    <ChevronDown className="size-3 opacity-60" />
+                  </Chip>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-[min(92vw,340px)] space-y-4 rounded-2xl">
+                  <div>
+                    <p className="text-sm font-medium">{t("soundTitle")}</p>
+                    <p className="text-xs text-muted-foreground">{t("soundBody")}</p>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <label htmlFor="background-music" className="text-sm font-medium">{t("backgroundMusic")}</label>
+                      <p className="text-xs text-muted-foreground">{t("backgroundMusicHint")}</p>
+                    </div>
+                    <Switch id="background-music" checked={backgroundMusic} onCheckedChange={setBackgroundMusic} />
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <label htmlFor="sound-effects" className="text-sm font-medium">{t("soundEffects")}</label>
+                      <p className="text-xs text-muted-foreground">{t("soundEffectsHint")}</p>
+                    </div>
+                    <Switch id="sound-effects" checked={soundEffects} onCheckedChange={setSoundEffects} />
                   </div>
                 </PopoverContent>
               </Popover>

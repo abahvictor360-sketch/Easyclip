@@ -232,6 +232,7 @@ def _merge_task_source_metadata(
     output_format: Any = None,
     add_subtitles: Any = None,
     cleanup_settings: Dict[str, Any] | None = None,
+    sound_settings: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     merged = dict(existing or {})
 
@@ -245,6 +246,9 @@ def _merge_task_source_metadata(
         merged["add_subtitles"] = add_subtitles
     if cleanup_settings:
         merged.update(cleanup_settings)
+    for key in ("background_music", "sound_effects"):
+        if isinstance((sound_settings or {}).get(key), bool):
+            merged[key] = sound_settings[key]
 
     return merged
 
@@ -441,6 +445,7 @@ async def create_task(request: Request, db: AsyncSession = Depends(get_db)):
                         output_format=output_format,
                         add_subtitles=add_subtitles,
                         cleanup_settings=cleanup_settings,
+                        sound_settings=data,
                     ),
                     db=db,
                 )

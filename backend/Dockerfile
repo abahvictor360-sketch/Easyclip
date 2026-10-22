@@ -42,6 +42,8 @@ RUN uv venv .venv && \
 # Also install from git to get the very latest commits
 RUN uv pip install --upgrade --force-reinstall yt-dlp
 RUN uv pip install --upgrade --force-reinstall "yt-dlp[default]"
+# PO token provider plugin; talks to the bgutil server set in YTDLP_POT_PROVIDER_URL
+RUN uv pip install bgutil-ytdlp-pot-provider
 
 # Copy source code
 COPY src/ ./src/

@@ -18,6 +18,24 @@ class Config:
         self.anthropic_api_key = self._get_runtime_setting("ANTHROPIC_API_KEY")
         self.google_api_key = self._get_runtime_setting("GOOGLE_API_KEY")
         self.youtube_data_api_key = self._get_runtime_setting("YOUTUBE_DATA_API_KEY")
+        # Optional Netscape cookies.txt for yt-dlp when YouTube asks to sign in.
+        self.ytdlp_cookies_file = self._get_optional_env("YTDLP_COOKIES_FILE")
+        # Optional bgutil PO token server and YouTube client, used without cookies.
+        self.ytdlp_pot_provider_url = self._get_optional_env("YTDLP_POT_PROVIDER_URL")
+        self.ytdlp_player_client = self._get_optional_env("YTDLP_PLAYER_CLIENT")
+        # Background music and sound effects: a local folder of audio files
+        # (music/ and sfx/) plus optional CC0 search on Freesound.org.
+        # Keep downloaded YouTube source videos after processing and reuse them,
+        # so Open in editor and re-renders skip the download.
+        self.keep_source_videos = os.getenv("KEEP_SOURCE_VIDEOS", "false").strip().lower() in {"1", "true", "yes"}
+        self.freesound_api_key = self._get_optional_env("FREESOUND_API_KEY")
+        self.audio_library_dir = self._get_optional_env("AUDIO_LIBRARY_DIR") or "/app/audio"
+        self.music_volume = float(os.getenv("MUSIC_VOLUME", "0.14"))
+        self.sfx_volume = float(os.getenv("SFX_VOLUME", "0.55"))
+        # Loudness rule: music and effects sit this many dB under the speaker's
+        # measured loudness, so speech always stays clearly on top.
+        self.music_below_voice_db = float(os.getenv("MUSIC_BELOW_VOICE_DB", "20"))
+        self.sfx_below_voice_db = float(os.getenv("SFX_BELOW_VOICE_DB", "8"))
         self.ollama_base_url = self._get_runtime_setting("OLLAMA_BASE_URL")
         self.ollama_api_key = self._get_runtime_setting("OLLAMA_API_KEY")
 

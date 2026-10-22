@@ -1,5 +1,6 @@
 """Shared media dependencies and rendering constants."""
 
+import os
 from pathlib import Path
 
 from typing import List, Dict, Any, Tuple, Optional
@@ -70,7 +71,7 @@ CLIP_END_SENTENCE_EXTENSION_SECONDS = 5.5
 
 # Matches the analysis cap (ai.MAX_ACCEPTED_CLIP_SECONDS). Rewinding a weak
 # opening or finishing a sentence must not turn an accepted clip into a longer one.
-MAX_RENDERED_CLIP_SECONDS = 60.0
+MAX_RENDERED_CLIP_SECONDS = float(os.getenv("CLIP_MAX_SECONDS", "60"))
 
 CLIP_END_PADDING_SECONDS = 0.35
 

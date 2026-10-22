@@ -91,7 +91,25 @@ class YouTubeDownloader:
             "age_limit": None,
         }
 
-        return opts
+        return apply_ytdlp_cookies(opts)
+
+
+def apply_ytdlp_cookies(opts: Dict[str, Any]) -> Dict[str, Any]:
+    """Add cookies, PO tokens and player client so yt-dlp can pass YouTube's bot check."""
+    config = get_config()
+    cookies_file = config.ytdlp_cookies_file
+    if cookies_file and Path(cookies_file).is_file():
+        opts["cookiefile"] = cookies_file
+    extractor_args = opts.setdefault("extractor_args", {})
+    if config.ytdlp_pot_provider_url:
+        extractor_args["youtubepot-bgutilhttp"] = {"base_url": [config.ytdlp_pot_provider_url]}
+    if config.ytdlp_player_client:
+        extractor_args.setdefault("youtube", {})["player_client"] = [
+            client.strip() for client in config.ytdlp_player_client.split(",") if client.strip()
+        ]
+    if not extractor_args:
+        opts.pop("extractor_args")
+    return opts
 
 
 def _build_info_options() -> Dict[str, Any]:
@@ -109,7 +127,7 @@ def _build_info_options() -> Dict[str, Any]:
         },
         "nocheckcertificate": True,
     }
-    return ydl_opts
+    return apply_ytdlp_cookies(ydl_opts)
 
 
 def _empty_video_info(video_id: Optional[str] = None) -> Dict[str, Any]:
@@ -207,6 +225,19 @@ def _get_local_video_dimensions(path: Path) -> tuple[int, int]:
         return (int(width_str), int(height_str))
     except Exception:
         return (0, 0)
+
+
+def _find_kept_download(temp_dir: Path, video_id: str) -> Optional[Path]:
+    """A complete earlier download of this video, if one was kept."""
+    from .media.ffmpeg import ffprobe_duration
+
+    candidate = temp_dir / f"{video_id}.mp4"
+    if not candidate.is_file() or any(temp_dir.glob(f"{video_id}.*.part")):
+        return None
+    try:
+        return candidate if ffprobe_duration(candidate) > 0 else None
+    except Exception:
+        return None
 
 
 def _remove_cached_downloads(temp_dir: Path, video_id: str) -> None:
@@ -631,9 +662,14 @@ def download_youtube_video(
         return None
 
     downloader = YouTubeDownloader()
+    config = get_config()
+    if config.keep_source_videos:
+        kept = _find_kept_download(downloader.temp_dir, video_id)
+        if kept:
+            logger.info("Reusing kept source video %s", kept.name)
+            return kept
     _remove_cached_downloads(downloader.temp_dir, video_id)
 
-    config = get_config()
     primary_provider = config.youtube_download_provider
     paid_providers = [YOUTUBE_DOWNLOAD_PROVIDER_RAPIDAPI, YOUTUBE_DOWNLOAD_PROVIDER_APIFY]
     if primary_provider != YOUTUBE_DOWNLOAD_PROVIDER_RAPIDAPI:

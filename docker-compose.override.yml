@@ -1,0 +1,62 @@
+# Local overrides: host ports 6379 and 8000 are used by the Coolify stack on this machine.
+services:
+  redis:
+    ports: !override
+      - "127.0.0.1:6380:6379"
+  backend:
+    ports: !override
+      - "127.0.0.1:8001:8000"
+    # YouTube bot check: PO tokens from the pot service, plus optional cookies.txt.
+    environment:
+      - YTDLP_COOKIES_FILE=/app/cookies/youtube.txt
+      - YTDLP_POT_PROVIDER_URL=http://pot:4416
+      - YTDLP_PLAYER_CLIENT=mweb
+      - CLIP_MIN_SECONDS=${CLIP_MIN_SECONDS:-90}
+      - CLIP_MAX_SECONDS=${CLIP_MAX_SECONDS:-180}
+      - CLIP_IDEAL_MIN_SECONDS=${CLIP_IDEAL_MIN_SECONDS:-100}
+      - CLIP_IDEAL_MAX_SECONDS=${CLIP_IDEAL_MAX_SECONDS:-150}
+      # Fonts installed on this computer (per-user first, then Windows).
+      - LOCAL_FONT_DIRS=/host-fonts/user:/host-fonts/windows
+      # Music and sound effects: ./audio/music, ./audio/sfx, plus CC0 Freesound search.
+      - FREESOUND_API_KEY=${FREESOUND_API_KEY:-}
+      - AUDIO_LIBRARY_DIR=/app/audio
+      # Keep YouTube source videos so Open in editor skips the re-download.
+      - KEEP_SOURCE_VIDEOS=${KEEP_SOURCE_VIDEOS:-true}
+    volumes:
+      - ./cookies:/app/cookies
+      - ./audio:/app/audio
+      - C:/Users/XPEL GRAPHICS/AppData/Local/Microsoft/Windows/Fonts:/host-fonts/user:ro
+      - C:/Windows/Fonts:/host-fonts/windows:ro
+    depends_on:
+      - pot
+  worker:
+    environment:
+      - YTDLP_COOKIES_FILE=/app/cookies/youtube.txt
+      - YTDLP_POT_PROVIDER_URL=http://pot:4416
+      - YTDLP_PLAYER_CLIENT=mweb
+      - CLIP_MIN_SECONDS=${CLIP_MIN_SECONDS:-90}
+      - CLIP_MAX_SECONDS=${CLIP_MAX_SECONDS:-180}
+      - CLIP_IDEAL_MIN_SECONDS=${CLIP_IDEAL_MIN_SECONDS:-100}
+      - CLIP_IDEAL_MAX_SECONDS=${CLIP_IDEAL_MAX_SECONDS:-150}
+      # Fonts installed on this computer (per-user first, then Windows).
+      - LOCAL_FONT_DIRS=/host-fonts/user:/host-fonts/windows
+      # Music and sound effects: ./audio/music, ./audio/sfx, plus CC0 Freesound search.
+      - FREESOUND_API_KEY=${FREESOUND_API_KEY:-}
+      - AUDIO_LIBRARY_DIR=/app/audio
+      # Keep YouTube source videos so Open in editor skips the re-download.
+      - KEEP_SOURCE_VIDEOS=${KEEP_SOURCE_VIDEOS:-true}
+    volumes:
+      - ./cookies:/app/cookies
+      - ./audio:/app/audio
+      - C:/Users/XPEL GRAPHICS/AppData/Local/Microsoft/Windows/Fonts:/host-fonts/user:ro
+      - C:/Windows/Fonts:/host-fonts/windows:ro
+    depends_on:
+      - pot
+  pot:
+    image: brainicism/bgutil-ytdlp-pot-provider
+    container_name: supoclip-pot
+    restart: unless-stopped
+  frontend:
+    # Translations are baked into the image; mount them so label edits apply live.
+    volumes:
+      - ./frontend/messages:/app/messages

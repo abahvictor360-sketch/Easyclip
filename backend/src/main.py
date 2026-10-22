@@ -8,6 +8,7 @@ This is the new main entry point with:
 - Thread pool for blocking operations
 """
 
+import asyncio
 from contextlib import asynccontextmanager
 import logging
 import time
@@ -69,6 +70,12 @@ def create_app(
 
             await queue_adapter.get_pool()
             logger.info("✅ Job queue initialized")
+
+            # Scan host font folders in the background so the first font list is fast.
+            from .font_registry import LOCAL_FONT_DIRS, get_available_fonts
+
+            if LOCAL_FONT_DIRS:
+                asyncio.get_running_loop().run_in_executor(None, get_available_fonts)
 
             yield
         finally:

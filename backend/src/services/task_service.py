@@ -30,6 +30,9 @@ from .task_completion_email_service import (
 from ..config import Config, get_config
 from ..youtube_utils import cleanup_downloaded_files, extract_video_id
 from ..clip_cleanup import normalize_clip_cleanup_settings
+from ..media.timeline import get_words_for_keep_ranges
+from ..media.transcription import load_cached_transcript_data
+from ..sound_design import apply_sound_design
 from ..ai import TRANSCRIPT_ANALYSIS_CACHE_VERSION
 from ..clip_source_map import load_clip_caption_settings
 from ..media_storage import MediaStorage, media_work
@@ -147,6 +150,13 @@ class TaskService(ClipEditingMixin):
         generated for transcription — the original upload is owned elsewhere.
         """
         if not video_path:
+            return
+
+        if source_type == "youtube" and get_config().keep_source_videos:
+            # Keep the video for the editor; only the transcription audio is dropped.
+            sidecar = video_path.with_name(f"{video_path.stem}.transcription.mp3")
+            sidecar.unlink(missing_ok=True)
+            logger.info("Keeping source video %s (KEEP_SOURCE_VIDEOS)", video_path.name)
             return
 
         if source_type == "youtube":
@@ -388,6 +398,14 @@ class TaskService(ClipEditingMixin):
             normalized_cleanup_settings = normalize_clip_cleanup_settings(
                 **(cleanup_settings or {})
             )
+            source_metadata = await self.task_repo.load_source_metadata(self.db, task_id)
+            add_music = source_metadata.get("background_music") is True
+            add_sound_effects = source_metadata.get("sound_effects") is True
+            transcript_data = (
+                load_cached_transcript_data(video_path)
+                if (add_music or add_sound_effects)
+                else None
+            )
 
             # Render clips incrementally: render, save, notify one at a time
             segments_to_render = result.get("segments_to_render", [])
@@ -462,6 +480,23 @@ class TaskService(ClipEditingMixin):
                 await check_cancelled()
                 if clip_info is None:
                     continue  # Skip failed clip
+
+                if transcript_data and clip_info.get("keep_ranges"):
+                    await update_progress(
+                        clip_progress, f"Adding sound to clip {i + 1}/{total_clips}..."
+                    )
+                    try:
+                        await apply_sound_design(
+                            Path(clip_info["path"]),
+                            get_words_for_keep_ranges(transcript_data, clip_info["keep_ranges"]),
+                            clip_info.get("hook_title"),
+                            music=add_music,
+                            effects=add_sound_effects,
+                        )
+                    except Exception as exc:
+                        # A clip without music beats losing the clip.
+                        logger.warning("Sound design failed for clip %d: %s", i + 1, exc)
+                    await check_cancelled()
 
                 async with self._processing_transaction(task_id):
                     await check_cancelled()

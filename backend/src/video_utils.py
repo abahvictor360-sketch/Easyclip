@@ -355,6 +355,24 @@ def create_optimized_clip(
             speaker_words: List[Dict[str, Any]] = []
             vertical_plan = None
             caption_y = None
+            split_plan = None
+            if reframe_format == "vertical_split":
+                # Decide the layout before the captions so they can sit on the
+                # seam between the two tiles instead of on the lower face.
+                try:
+                    split_plan = detect_speaker_reframe_plan(
+                        source_clip_path, "vertical_split"
+                    )
+                except Exception as exc:
+                    logger.warning("Split-screen planning failed: %s", exc)
+                if split_plan and split_plan.get("mode") == "split":
+                    caption_y = 0.5
+                else:
+                    logger.info(
+                        "Split-screen needs two people in one steady shot; using Auto 9:16"
+                    )
+                    split_plan = None
+                    reframe_format = "vertical"
             if reframe_format == "vertical":
                 if get_config().speaker_framing:
                     try:
@@ -406,6 +424,7 @@ def create_optimized_clip(
                 speaker_turns=speaker_turns,
                 speaker_words=speaker_words,
                 vertical_plan=vertical_plan,
+                reframe_plan=split_plan,
             )
             if not framed_ok:
                 raise RuntimeError("ffmpeg reframe render failed")

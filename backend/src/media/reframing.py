@@ -1268,8 +1268,11 @@ def render_reframed_clip_ffmpeg(
     speaker_turns: Optional[List[Dict[str, Any]]] = None,
     speaker_words: Optional[List[Dict[str, Any]]] = None,
     vertical_plan: Optional[Tuple[str, str]] = None,
+    reframe_plan: Optional[Dict[str, Any]] = None,
 ) -> Tuple[bool, int, int]:
     """Render the final framed clip and (optionally) burn subtitles in one pass.
+
+    ``reframe_plan`` reuses a speaker plan the caller already detected.
 
     Collapsing reframing + subtitle burn into a single encode avoids a whole
     generation of re-encode loss. The pass uses the high-quality profile, CFR
@@ -1299,7 +1302,7 @@ def render_reframed_clip_ffmpeg(
         ]
         return run_ffmpeg_command(command).returncode == 0, out_w, out_h
 
-    plan = (
+    plan = reframe_plan or (
         detect_speaker_reframe_plan(input_path, output_format)
         if output_format in {"vertical_pan", "vertical_split"}
         else None

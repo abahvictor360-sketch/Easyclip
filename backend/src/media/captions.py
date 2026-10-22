@@ -355,6 +355,8 @@ def build_assemblyai_ass_subtitles(
     word_pop = bool(template.get("word_pop", True))
     word_box = bool(template.get("word_box"))
     glow = bool(template.get("glow"))
+    reveal = bool(template.get("reveal"))
+    tilt = float(template.get("tilt") or 0)
     has_outline = template.get("stroke_color") is not None
     # Emphasis colouring only makes sense when something distinguishes words.
     enable_emphasis = (
@@ -465,7 +467,12 @@ Style: Default,{font_name},{font_px},{primary},&H000000FF,{style_outline},{back_
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
 
-    line_prefix = f"{{\\pos({video_width // 2},{y_pos})" + ("\\blur4" if glow else "") + "}"
+    line_prefix = (
+        f"{{\\pos({video_width // 2},{y_pos})"
+        + ("\\blur4" if glow else "")
+        + (f"\\frz{tilt:g}" if tilt else "")
+        + "}"
+    )
 
     # Every word span re-declares the caption font, so an emoji's \fn override
     # can never leak into the following word.
@@ -488,15 +495,19 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     # advance width, which reflows the centre-anchored line and makes the whole
     # caption visibly vibrate as each word pops. The "pop" lives as a one-shot
     # line entrance instead (see below).
+    # Reveal templates keep not-yet-spoken words in the layout but fully
+    # transparent, so the line builds word by word without reflowing.
+    shown_alpha = "\\alpha&H00&" if reveal else ""
+
     def active_span(disp: str) -> str:
-        tags = f"{font_tag}\\c{highlight}"
+        tags = f"{font_tag}\\c{highlight}{shown_alpha}"
         if word_box:
             tags += f"\\3c{box_color}\\bord{box_bord}\\shad0"
         return f"{{{tags}}}{disp}"
 
-    def idle_span(global_idx: int, disp: str) -> str:
+    def idle_span(global_idx: int, disp: str, hidden: bool = False) -> str:
         color = emphasis_color if (enable_emphasis and global_idx in emphasis_idx) else primary
-        tags = f"{font_tag}\\c{color}"
+        tags = f"{font_tag}\\c{color}" + ("\\alpha&HFF&" if hidden else shown_alpha)
         if word_box:
             tags += f"\\3c{outline}\\bord{outline_px}\\shad{shadow_px}"
         return f"{{{tags}}}{disp}"
@@ -527,7 +538,11 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 for local_j, other in enumerate(chunk):
                     gj = indices[local_j]
                     disp = render_text(gj, other)
-                    parts.append(active_span(disp) if local_j == local_i else idle_span(gj, disp))
+                    parts.append(
+                        active_span(disp)
+                        if local_j == local_i
+                        else idle_span(gj, disp, hidden=reveal and local_j > local_i)
+                    )
                 line = " ".join(parts)
                 # Entrance only on the first word's event so it plays once, not
                 # once per word.

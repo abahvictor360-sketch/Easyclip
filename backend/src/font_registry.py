@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any
 from functools import lru_cache
+import os
 import re
 import struct
 import subprocess
@@ -8,6 +9,13 @@ import subprocess
 SUPPORTED_FONT_EXTENSIONS = (".ttf", ".otf")
 FONTS_DIR = Path(__file__).parent.parent / "fonts"
 USER_FONTS_DIR = FONTS_DIR / "users"
+# Extra read-only font folders, such as the host computer's installed fonts,
+# separated by os.pathsep (":" in the containers).
+LOCAL_FONT_DIRS = [
+    Path(entry)
+    for entry in os.getenv("LOCAL_FONT_DIRS", "").split(os.pathsep)
+    if entry.strip()
+]
 TTF_NAME_ID_FONT_FAMILY = 1
 TTF_NAME_ID_FULL_NAME = 4
 ASS_UNSAFE_NAME_CHARS = frozenset("(){}\\")
@@ -90,22 +98,45 @@ def _collect_fonts_from_dir(font_dir: Path, scope: str) -> list[dict[str, Any]]:
     if not font_dir.exists():
         return []
 
+    local = scope == "local"
     fonts: list[dict[str, Any]] = []
-    for extension in SUPPORTED_FONT_EXTENSIONS:
-        for font_path in sorted(font_dir.glob(f"*{extension}")):
-            fonts.append(
-                {
-                    "name": font_path.stem,
-                    "display_name": _display_name(font_path.stem),
-                    "filename": font_path.name,
-                    "format": extension.lstrip("."),
-                    "file_path": str(font_path),
-                    "scope": scope,
-                    "supported_languages": get_font_languages(font_path),
-                }
-            )
+    for font_path in sorted(font_dir.iterdir()):
+        extension = font_path.suffix.lower()
+        if extension not in SUPPORTED_FONT_EXTENSIONS or not font_path.is_file():
+            continue
+        # Installed fonts have short file names (arialbd.ttf), so show the
+        # font's own full name instead. Their coverage check is skipped
+        # because running fc-query on hundreds of files makes the list slow.
+        display_name = (
+            (_cached_full_name(str(font_path), font_path.stat().st_mtime_ns) if local else None)
+            or _display_name(font_path.stem)
+        )
+        fonts.append(
+            {
+                "name": font_path.stem,
+                "display_name": display_name,
+                "filename": font_path.name,
+                "format": extension.lstrip("."),
+                "file_path": str(font_path),
+                "scope": scope,
+                "supported_languages": None if local else get_font_languages(font_path),
+            }
+        )
 
     return fonts
+
+
+def _dir_mtime(font_dir: Path) -> int:
+    try:
+        return font_dir.stat().st_mtime_ns
+    except OSError:
+        return 0
+
+
+@lru_cache(maxsize=16)
+def _collect_local_fonts(font_dir: str, modified_ns: int) -> tuple[dict[str, Any], ...]:
+    """Host font folders are large and slow to scan; rescan only when they change."""
+    return tuple(_collect_fonts_from_dir(Path(font_dir), scope="local"))
 
 
 def get_available_fonts(user_id: str | None = None) -> list[dict[str, Any]]:
@@ -114,7 +145,14 @@ def get_available_fonts(user_id: str | None = None) -> list[dict[str, Any]]:
     if user_id:
         fonts.extend(_collect_fonts_from_dir(get_user_fonts_dir(user_id), scope="user"))
 
-    return sorted(fonts, key=lambda font: font["display_name"])
+    known = {font["name"].lower() for font in fonts}
+    for font_dir in LOCAL_FONT_DIRS:
+        for font in _collect_local_fonts(str(font_dir), _dir_mtime(font_dir)):
+            if font["name"].lower() not in known:
+                known.add(font["name"].lower())
+                fonts.append(font)
+
+    return sorted(fonts, key=lambda font: font["display_name"].lower())
 
 
 def find_font_path(
@@ -126,7 +164,7 @@ def find_font_path(
     if not requested:
         return None
 
-    search_dirs = [FONTS_DIR]
+    search_dirs = [FONTS_DIR, *LOCAL_FONT_DIRS]
     if user_id:
         search_dirs.insert(0, get_user_fonts_dir(user_id))
 
@@ -169,8 +207,39 @@ def _decode_ttf_name(raw_value: bytes, platform_id: int) -> str:
     return ""
 
 
+@lru_cache(maxsize=4096)
+def _cached_full_name(path: str, modified_ns: int) -> str | None:
+    names = _read_font_names(Path(path))
+    if not names:
+        return None
+    full = names[TTF_NAME_ID_FULL_NAME] or names[TTF_NAME_ID_FONT_FAMILY]
+    return full[0] if full else None
+
+
 def get_font_family_name(font_path: Path) -> str | None:
     """Read a font's internal family name for renderers that match by metadata."""
+    candidates = _read_font_names(font_path)
+    if not candidates:
+        return None
+    family_names = list(dict.fromkeys(candidates[TTF_NAME_ID_FONT_FAMILY]))
+    full_names = [name for name in candidates[TTF_NAME_ID_FULL_NAME] if name]
+    # ASS override tags (\fn<name>) end at "(", "{" or "\", so a family like
+    # "THE BOLD FONT (FREE VERSION)" silently falls back to another font.
+    # libass also matches full names, so prefer any tag-safe candidate.
+    for names in (family_names, full_names):
+        safe_names = [name for name in names if not ASS_UNSAFE_NAME_CHARS & set(name)]
+        if safe_names:
+            return min(safe_names, key=len)
+
+    if family_names:
+        return min(family_names, key=len)
+    if full_names:
+        return full_names[0]
+    return None
+
+
+def _read_font_names(font_path: Path) -> dict[int, list[str]] | None:
+    """Family and full-name records from a font's name table, English first."""
     try:
         data = Path(font_path).read_bytes()
         if len(data) < 12:
@@ -233,24 +302,9 @@ def get_font_family_name(font_path: Path) -> str | None:
             else:
                 candidates[name_id].append(decoded)
 
-        family_names = list(dict.fromkeys(candidates[TTF_NAME_ID_FONT_FAMILY]))
-        full_names = [name for name in candidates[TTF_NAME_ID_FULL_NAME] if name]
-        # ASS override tags (\fn<name>) end at "(", "{" or "\", so a family like
-        # "THE BOLD FONT (FREE VERSION)" silently falls back to another font.
-        # libass also matches full names, so prefer any tag-safe candidate.
-        for names in (family_names, full_names):
-            safe_names = [name for name in names if not ASS_UNSAFE_NAME_CHARS & set(name)]
-            if safe_names:
-                return min(safe_names, key=len)
-
-        if family_names:
-            return min(family_names, key=len)
-        if full_names:
-            return full_names[0]
+        return candidates
     except Exception:
         return None
-
-    return None
 
 
 def sanitize_font_stem(file_name: str) -> str:

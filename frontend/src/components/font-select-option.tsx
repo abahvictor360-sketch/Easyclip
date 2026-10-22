@@ -10,7 +10,7 @@ import { FontLanguageInfo } from "@/components/font-language-info";
 export interface FontOption {
   name: string;
   display_name: string;
-  scope: "system" | "user";
+  scope: "system" | "user" | "local";
   format?: string;
   supported_languages?: string[] | null;
 }

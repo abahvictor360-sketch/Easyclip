@@ -7,11 +7,12 @@ from typing import List, Dict, Any, Optional, Literal
 import asyncio
 import logging
 import math
+import os
 import random
 import re
 
 import httpx
-from pydantic_ai import Agent, NativeOutput
+from pydantic_ai import Agent, NativeOutput, PromptedOutput
 from pydantic_ai.exceptions import ModelHTTPError
 from pydantic_ai.models import Model
 from pydantic_ai.models.ollama import OllamaModel
@@ -26,11 +27,16 @@ from .runtime_settings import apply_settings_to_process_env
 
 logger = logging.getLogger(__name__)
 
-IDEAL_CLIP_MIN_SECONDS = 25
-IDEAL_CLIP_MAX_SECONDS = 50
-MIN_ACCEPTED_CLIP_SECONDS = 15
-MAX_ACCEPTED_CLIP_SECONDS = 60
-TRANSCRIPT_ANALYSIS_CACHE_VERSION = "windowed-rerank-v6"
+# Clip length bounds; override with CLIP_MIN_SECONDS / CLIP_MAX_SECONDS and
+# CLIP_IDEAL_MIN_SECONDS / CLIP_IDEAL_MAX_SECONDS.
+IDEAL_CLIP_MIN_SECONDS = int(os.getenv("CLIP_IDEAL_MIN_SECONDS", "25"))
+IDEAL_CLIP_MAX_SECONDS = int(os.getenv("CLIP_IDEAL_MAX_SECONDS", "50"))
+MIN_ACCEPTED_CLIP_SECONDS = int(os.getenv("CLIP_MIN_SECONDS", "15"))
+MAX_ACCEPTED_CLIP_SECONDS = int(os.getenv("CLIP_MAX_SECONDS", "60"))
+# Length bounds are part of the key so cached analyses never break the limits.
+TRANSCRIPT_ANALYSIS_CACHE_VERSION = (
+    f"windowed-rerank-v6-len{MIN_ACCEPTED_CLIP_SECONDS}-{MAX_ACCEPTED_CLIP_SECONDS}"
+)
 TRANSCRIPT_ANALYSIS_MAX_ATTEMPTS = 3
 TRANSCRIPT_ANALYSIS_TIMEOUT_SECONDS = 600
 # Long transcripts are analysed in overlapping windows so every part of the
@@ -313,7 +319,7 @@ class TranscriptAnalysis(BaseModel):
 
 
 # Enhanced system prompt with virality scoring and B-roll detection
-transcript_analysis_system_prompt = """You are an expert transcript analyst for short-form video editing.
+transcript_analysis_system_prompt = f"""You are an expert transcript analyst for short-form video editing.
 
 Your job is extraction and ranking, not creative rewriting. You must stay fully grounded in the transcript and choose the best clip candidates that already exist in the source material.
 
@@ -324,7 +330,7 @@ OUTPUT CONTRACT:
 - Each item in "most_relevant_segments" must include: "start_time", "end_time", "text", "relevance_score", "reasoning", "virality", and "hook_title".
 - Do not use "segment" as an output field. Use "text".
 - "virality" must include: "hook_score", "engagement_score", "value_score", "shareability_score", "total_score", "hook_type", and "virality_reasoning".
-- Every returned segment must be 15-60 seconds long. Prefer 25-50 seconds.
+- Every returned segment must be {MIN_ACCEPTED_CLIP_SECONDS}-{MAX_ACCEPTED_CLIP_SECONDS} seconds long. Prefer {IDEAL_CLIP_MIN_SECONDS}-{IDEAL_CLIP_MAX_SECONDS} seconds.
 
 CORE OBJECTIVES:
 1. Identify segments that would be compelling on social media platforms
@@ -431,12 +437,12 @@ Identify 2-4 moments in each segment where B-roll footage could enhance the vide
 - Use simple, searchable keywords (e.g., "coffee shop", "laptop coding", "money stack")
 
 TIMING GUIDELINES:
-- Target 25-50 seconds for most clips
-- Use 15-24 seconds only when the moment is exceptionally dense, self-contained, and complete
-- CRITICAL: start_time MUST be different from end_time (minimum 15 seconds apart)
+- Target {IDEAL_CLIP_MIN_SECONDS}-{IDEAL_CLIP_MAX_SECONDS} seconds for most clips
+- Use {MIN_ACCEPTED_CLIP_SECONDS}-{IDEAL_CLIP_MIN_SECONDS - 1} seconds only when the moment is exceptionally dense, self-contained, and complete
+- CRITICAL: start_time MUST be different from end_time (minimum {MIN_ACCEPTED_CLIP_SECONDS} seconds apart)
 - Focus on natural content boundaries rather than arbitrary time limits
 - Include enough context for the segment to be understandable
-- Prefer roughly 30-50 seconds when possible
+- Prefer roughly {IDEAL_CLIP_MIN_SECONDS}-{IDEAL_CLIP_MAX_SECONDS} seconds when possible
 - Start at the hook or the minimum setup needed to make the hook land, and end after the payoff
 - If a highlight is only one good line, expand to include the surrounding setup and payoff rather than returning a tiny fragment
 - Stop expanding when the topic drifts, the speaker repeats the same point, or the clip loses momentum
@@ -445,8 +451,9 @@ TIMESTAMP REQUIREMENTS - EXTREMELY IMPORTANT:
 - Use EXACT timestamps as they appear in the transcript
 - Never modify timestamp format (keep MM:SS structure)
 - start_time MUST be LESS THAN end_time (start_time < end_time)
-- MINIMUM segment duration: 15 seconds (end_time - start_time >= 15 seconds)
-- IDEAL segment duration: 25-50 seconds
+- MINIMUM segment duration: {MIN_ACCEPTED_CLIP_SECONDS} seconds (end_time - start_time >= {MIN_ACCEPTED_CLIP_SECONDS} seconds)
+- MAXIMUM segment duration: {MAX_ACCEPTED_CLIP_SECONDS} seconds
+- IDEAL segment duration: {IDEAL_CLIP_MIN_SECONDS}-{IDEAL_CLIP_MAX_SECONDS} seconds
 - Look at transcript ranges like [02:25 - 02:35] and use different start/end times
 - NEVER use the same timestamp for both start_time and end_time
 - Example: start_time: "02:25", end_time: "02:35" (NOT "02:25" and "02:25")
@@ -522,6 +529,38 @@ def _get_missing_llm_key_error(model_name: str, runtime_config: Config) -> Optio
     return None
 
 
+def _structured_output_type(output_model, provider: str):
+    if provider == "openrouter":
+        return NativeOutput(output_model, strict=True)
+    # Newer Claude models reject the forced tool_choice that tool output uses.
+    if provider == "anthropic":
+        return PromptedOutput(output_model)
+    return output_model
+
+
+async def run_structured_prompt(
+    prompt: str,
+    output_model,
+    system_prompt: str,
+    timeout_seconds: float = 120,
+):
+    """Ask the configured LLM for one structured answer (used outside clip selection)."""
+    runtime_config = get_config()
+    apply_settings_to_process_env(runtime_config.as_runtime_settings())
+    config_error = _get_missing_llm_key_error(runtime_config.llm, runtime_config)
+    if config_error:
+        raise RuntimeError(config_error)
+    provider, _ = _split_llm_name(runtime_config.llm)
+    agent = Agent(
+        model=_build_transcript_model(runtime_config),
+        output_type=_structured_output_type(output_model, provider),
+        system_prompt=system_prompt,
+        output_retries=2,
+    )
+    result = await asyncio.wait_for(agent.run(prompt), timeout=timeout_seconds)
+    return result.output
+
+
 def _build_transcript_model(
     runtime_config: Config, model_name: str | None = None
 ) -> Model | str:
@@ -588,7 +627,7 @@ def get_transcript_agent() -> Agent[None, TranscriptAnalysis]:
 
         _transcript_agent = Agent[None, TranscriptAnalysis](
             model=_build_transcript_model(runtime_config),
-            output_type=NativeOutput(TranscriptAnalysis, strict=True) if provider == "openrouter" else TranscriptAnalysis,
+            output_type=_structured_output_type(TranscriptAnalysis, provider),
             system_prompt=transcript_analysis_system_prompt,
             # Some local Ollama/OpenAI-compatible endpoints can return formatted
             # prose before settling on schema-valid JSON. Keep retries limited
@@ -667,7 +706,7 @@ def get_rerank_agent() -> Agent[None, CandidateRanking]:
 
         _rerank_agent = Agent[None, CandidateRanking](
             model=_build_transcript_model(runtime_config, model_name),
-            output_type=NativeOutput(CandidateRanking, strict=True) if provider == "openrouter" else CandidateRanking,
+            output_type=_structured_output_type(CandidateRanking, provider),
             system_prompt=candidate_rerank_system_prompt,
             output_retries=2,
         )
@@ -761,9 +800,9 @@ Follow this workflow:
 
 Selection target:
 - Choose {segment_target} segments total.
-- Most selected clips should be 25-50 seconds.
-- Only choose a 15-24 second clip when it already contains a full setup and payoff.
-- If a strong moment is shorter than 25 seconds, first try expanding to nearby contiguous transcript lines that add useful context.
+- Most selected clips should be {IDEAL_CLIP_MIN_SECONDS}-{IDEAL_CLIP_MAX_SECONDS} seconds.
+- Only choose a {MIN_ACCEPTED_CLIP_SECONDS}-{IDEAL_CLIP_MIN_SECONDS - 1} second clip when it already contains a full setup and payoff.
+- If a strong moment is shorter than {IDEAL_CLIP_MIN_SECONDS} seconds, first try expanding to nearby contiguous transcript lines that add useful context.
 - Skip weak standalone picks: intros, sponsor reads, CTAs, contextless quotes, repeated points, vague setup, and answer fragments that require prior context.
 - Before returning a segment, ask whether a viewer would understand and care without seeing the rest of the source video.
 
