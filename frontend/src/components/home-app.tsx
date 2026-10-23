@@ -32,6 +32,7 @@ import { buildFontOptionsPayload, FONT_TEMPLATE_DEFAULT_VALUE } from "@/lib/font
 import { fetchGenerations, type GenerationSummary } from "@/lib/generations";
 import { cn } from "@/lib/utils";
 import { FontSelectOption, type FontOption } from "@/components/font-select-option";
+import { CaptionStylePreview } from "@/components/caption-preview";
 
 interface CaptionTemplate {
   id: string;
@@ -486,7 +487,7 @@ export default function HomeApp() {
                               onClick={() => setCaptionTemplate(template.id)}
                               className={cn("flex w-full min-w-0 items-center gap-3 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-accent", captionTemplate === template.id && "bg-accent")}
                             >
-                              <span className="size-3 shrink-0 rounded-full border" style={{ backgroundColor: template.font_color || "#fff" }} />
+                              <CaptionStylePreview templateId={template.id} fallbackColor={template.font_color} />
                               <span className="min-w-0 flex-1">
                                 <span className="block text-sm font-medium">{template.name}</span>
                                 <span className="block truncate text-xs text-muted-foreground">{template.description}</span>

@@ -62,6 +62,7 @@ import { intlLocale } from "@/i18n/config";
 import { timeAgo } from "@/lib/generations";
 import { cn } from "@/lib/utils";
 import { FontSelectOption, type FontOption } from "@/components/font-select-option";
+import { CaptionStylePreview } from "@/components/caption-preview";
 import { ClipPostList, ClipPublishButton, useSocialPostToasts } from "@/components/clip-publisher";
 import {
   ACTIVE_POST_STATUSES,
@@ -911,9 +912,12 @@ export default function TaskPage() {
                   <SelectContent>
                     {availableTemplates.map((template) => (
                       <SelectItem key={template.id} value={template.id}>
-                        <div>
-                          <div className="font-medium">{template.name}</div>
-                          <div className="text-xs text-gray-500">{template.description}</div>
+                        <div className="flex items-center gap-3">
+                          <CaptionStylePreview templateId={template.id} />
+                          <div>
+                            <div className="font-medium">{template.name}</div>
+                            <div className="text-xs text-gray-500">{template.description}</div>
+                          </div>
                         </div>
                       </SelectItem>
                     ))}
