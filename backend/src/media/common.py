@@ -114,6 +114,9 @@ HOOK_TITLE_MIN_SECONDS = 1.5
 
 HOOK_TITLE_TOP_MARGIN_FRAC = 0.07
 
+# Distance from the bottom when top-positioned captions push the title down.
+HOOK_TITLE_LOW_MARGIN_FRAC = 0.24
+
 ANALYSIS_SEGMENT_MIN_WORDS = 8
 
 ANALYSIS_SEGMENT_MAX_WORDS = 8

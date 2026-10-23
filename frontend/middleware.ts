@@ -26,7 +26,7 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/api")) {
     return NextResponse.json(
-      { error: "SupoClip is in landing-page-only mode." },
+      { error: "Easyclip is in landing-page-only mode." },
       { status: 503 }
     );
   }

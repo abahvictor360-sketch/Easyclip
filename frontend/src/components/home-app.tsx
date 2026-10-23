@@ -560,6 +560,9 @@ export default function HomeApp() {
                         fontFamily={previewFontFamily}
                         fontSize={previewFontSize}
                         color={previewFontColor}
+                        // The rendered style frame only matches while font, size and
+                        // colour follow the template; custom picks show the text preview.
+                        styleImage={fontFamily === null && fontSize === null && fontColor === null ? `/caption-previews/full/${captionTemplate}.jpg` : null}
                       />
                       <p className="mt-3 text-center text-[11px] text-muted-foreground">{t("livePreview")}</p>
                     </div>
@@ -814,8 +817,22 @@ function Chip({ active, className, children, ...props }: React.ComponentProps<"b
   );
 }
 
-function CaptionPreview({ thumbnail, fontFamily, fontSize, color }: { thumbnail: string | null; fontFamily: string; fontSize: number; color: string }) {
+function CaptionPreview({ thumbnail, fontFamily, fontSize, color, styleImage }: { thumbnail: string | null; fontFamily: string; fontSize: number; color: string; styleImage?: string | null }) {
   const t = useTranslations("home");
+  const [failedImage, setFailedImage] = useState<string | null>(null);
+  if (styleImage && failedImage !== styleImage) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- static style preview
+      <img
+        src={styleImage}
+        alt={t("previewCaptions")}
+        width={270}
+        height={480}
+        onError={() => setFailedImage(styleImage)}
+        className="mx-auto aspect-[9/16] w-full rounded-xl bg-stone-800 object-cover shadow-inner"
+      />
+    );
+  }
   return (
     <div className="relative mx-auto aspect-[9/16] w-full overflow-hidden rounded-xl bg-stone-800 shadow-inner">
       {thumbnail ? (

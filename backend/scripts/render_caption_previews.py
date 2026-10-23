@@ -5,6 +5,9 @@ Run inside the worker container and copy the output into the frontend:
 
     docker compose exec -T worker sh -c 'cd /app && .venv/bin/python -' < backend/scripts/render_caption_previews.py
     docker cp supoclip-worker:/tmp/caption-previews/. frontend/public/caption-previews/
+
+Each template gets a caption-band thumbnail (<id>.jpg, for the style lists) and a
+full 9:16 frame with a hook title (full/<id>.jpg, for the live preview).
 """
 
 import subprocess
@@ -24,9 +27,13 @@ W, H, STEP = 1080, 1920, 0.35
 SNAP = 1.62  # mid "authority" (1.40-1.72 s), after Blur Word sharpens at 1.58 s
 BAND_W, BAND_H = 840, 360  # the frame area around the captions
 OUT_W, OUT_H = 280, 120
+FULL_W, FULL_H = 270, 480
+HOOK_TITLE = "Know Your Authority"
 
 out = Path("/tmp/caption-previews")
 out.mkdir(parents=True, exist_ok=True)
+full_dir = out / "full"
+full_dir.mkdir(exist_ok=True)
 words = [
     {"text": w, "start": round(i * STEP, 3), "end": round(i * STEP + STEP - 0.03, 3)}
     for i, w in enumerate(TEXT.split())
@@ -59,6 +66,20 @@ for template_id in CAPTION_TEMPLATES:
          "-frames:v", "1", "-q:v", "3", str(out / f"{template_id}.jpg")],
         check=True,
     )
+    # Full 9:16 frame with a hook title, for the Create page's live preview.
+    full_ass = out / f"{template_id}.full.ass"
+    build_assemblyai_ass_subtitles(
+        background, 0, 4, W, H, full_ass, caption_template=template_id,
+        caption_words=words, hook_title=HOOK_TITLE,
+    )
+    subprocess.run(
+        ["ffmpeg", "-y", "-v", "error", "-i", str(background), "-ss", str(SNAP), "-vf",
+         subtitles_filter_fragment(full_ass, ass_fonts_dir(template["font_family"]))
+         + f",scale={FULL_W}:{FULL_H}:flags=lanczos",
+         "-frames:v", "1", "-q:v", "3", str(full_dir / f"{template_id}.jpg")],
+        check=True,
+    )
     ass.unlink(missing_ok=True)
+    full_ass.unlink(missing_ok=True)
     print("rendered", template_id)
 background.unlink(missing_ok=True)

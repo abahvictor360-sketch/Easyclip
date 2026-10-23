@@ -61,6 +61,10 @@ services:
     container_name: supoclip-pot
     restart: unless-stopped
   frontend:
+    # Docker Desktop on Windows does not forward file-change events into
+    # containers, so the dev server polls; otherwise edits never recompile.
+    environment:
+      - WATCHPACK_POLLING=true
     # Translations are baked into the image; mount them so label edits apply live.
     volumes:
       - ./frontend/messages:/app/messages

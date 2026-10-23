@@ -22,6 +22,7 @@ from .common import (
     EMOJI_FONT_NAME,
     HOOK_TITLE_MIN_SECONDS,
     HOOK_TITLE_SECONDS,
+    HOOK_TITLE_LOW_MARGIN_FRAC,
     HOOK_TITLE_TOP_MARGIN_FRAC,
     _EMOJI_SUPPORT_CACHE,
     logger,
@@ -256,10 +257,16 @@ def build_hook_title_ass(
         outline_px = max(2, hook_px // 16)  # always keep contrast on video
     shadow_px = max(2, hook_px // 20) if template.get("shadow") else 0
     margin_v = max(48, int(video_height * HOOK_TITLE_TOP_MARGIN_FRAC))
+    alignment = 8
+    # Styles that caption the top half (e.g. Headline Yellow) would collide with
+    # the title, so it moves to the lower part of the frame instead.
+    if float(template.get("position_y", 0.80)) < 0.45:
+        alignment = 2
+        margin_v = int(video_height * HOOK_TITLE_LOW_MARGIN_FRAC)
 
     style_line = (
         f"Style: Hook,{font_name},{hook_px},{primary},&H000000FF,{outline},{back_color},"
-        f"1,0,0,0,100,100,0,0,{border_style},{outline_px},{shadow_px},8,60,60,{margin_v},1"
+        f"1,0,0,0,100,100,0,0,{border_style},{outline_px},{shadow_px},{alignment},60,60,{margin_v},1"
     )
 
     # Accent power words / numbers in the template highlight colour.
