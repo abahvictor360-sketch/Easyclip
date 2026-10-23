@@ -46,7 +46,7 @@
   "announcements": {
     "whatsNew": "What's new",
     "whatsNewUnread": "What's new, {count, plural, one {# unread announcement} other {# unread announcements}}",
-    "title": "What's new in SupoClip",
+    "title": "What's new in Easyclip",
     "close": "Close announcements",
     "popover": "Announcements",
     "new": "New"

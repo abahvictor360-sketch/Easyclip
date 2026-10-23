@@ -11,7 +11,7 @@ from src.services.email_service import EmailContent, SesEmailService
 def sender(monkeypatch):
     service = SesEmailService(SimpleNamespace(
         aws_region="us-east-1", aws_access_key_id="test", aws_secret_access_key="test",
-        ses_from_email="SupoClip <support@example.com>",
+        ses_from_email="Easyclip <support@example.com>",
     ))
     service._send = MagicMock(return_value={"MessageId": "ses-message-1"})
     db = MagicMock()

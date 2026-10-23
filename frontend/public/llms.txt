@@ -1,14 +1,14 @@
-# SupoClip
+# Easyclip
 
-> SupoClip is an open-source AI video clipper that turns long videos into captioned, vertical short-form clips for YouTube Shorts, TikTok, Instagram Reels, and similar platforms.
+> Easyclip is an open-source AI video clipper that turns long videos into captioned, vertical short-form clips for YouTube Shorts, TikTok, Instagram Reels, and similar platforms.
 
-SupoClip can be used as a hosted web application, as a native iOS app, or self-hosted from its AGPL-3.0 source code. The workflow accepts YouTube URLs and uploaded video files, transcribes the source, proposes promising segments, scores candidate clips, creates face-aware vertical crops, adds word-synced captions, and exports platform-ready videos.
+Easyclip can be used as a hosted web application, as a native iOS app, or self-hosted from its AGPL-3.0 source code. The workflow accepts YouTube URLs and uploaded video files, transcribes the source, proposes promising segments, scores candidate clips, creates face-aware vertical crops, adds word-synced captions, and exports platform-ready videos.
 
 ## Canonical website
 
-- [SupoClip](https://www.supoclip.com/): Product overview, features, pricing, and hosted application access.
+- [Easyclip](https://www.supoclip.com/): Product overview, features, pricing, and hosted application access.
 - [GitHub repository](https://github.com/FujiwaraChoki/supoclip): Source code, setup instructions, architecture, license, and contribution history.
-- [SupoClip for iOS](https://apps.apple.com/us/app/supoclip/id6784760040): Native iPhone app on the App Store, backed by the hosted service.
+- [Easyclip for iOS](https://apps.apple.com/us/app/supoclip/id6784760040): Native iPhone app on the App Store, backed by the hosted service.
 
 ## Product pages
 
@@ -19,11 +19,11 @@ SupoClip can be used as a hosted web application, as a native iOS app, or self-h
 
 ## Guides and comparisons
 
-- [SupoClip Blog](https://www.supoclip.com/blog): Product comparisons and practical video-clipping workflows.
-- [Self-host SupoClip with Docker Compose](https://www.supoclip.com/blog/self-host-supoclip-docker): Requirements, environment setup, fully local Whisper + Ollama option, and production checklist.
-- [SupoClip vs OpusClip](https://www.supoclip.com/blog/supoclip-vs-opusclip): Sourced comparison of deployment, pricing model, watermarks, and workflow.
+- [Easyclip Blog](https://www.supoclip.com/blog): Product comparisons and practical video-clipping workflows.
+- [Self-host Easyclip with Docker Compose](https://www.supoclip.com/blog/self-host-supoclip-docker): Requirements, environment setup, fully local Whisper + Ollama option, and production checklist.
+- [Easyclip vs OpusClip](https://www.supoclip.com/blog/supoclip-vs-opusclip): Sourced comparison of deployment, pricing model, watermarks, and workflow.
 - [Best free, self-hosted OpusClip alternative](https://www.supoclip.com/blog/best-free-opusclip-alternative): When self-hosting the open-source app beats a credit-based tool.
-- [SupoClip vs supo.live](https://www.supoclip.com/blog/supoclip-vs-supo-live): Open-source control compared with a hosted live-clipping service.
+- [Easyclip vs supo.live](https://www.supoclip.com/blog/supoclip-vs-supo-live): Open-source control compared with a hosted live-clipping service.
 
 ## Key capabilities
 
@@ -48,7 +48,7 @@ SupoClip can be used as a hosted web application, as a native iOS app, or self-h
 
 ## Publisher
 
-- Name: SupoClip Team
+- Name: Easyclip Team
 - Website: https://www.supoclip.com/
 - Source: https://github.com/FujiwaraChoki/supoclip
 - Contact: support@supoclip.com

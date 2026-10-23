@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "SupoClip – Open-Source AI Video Clipper for Shorts",
+    "title": "Easyclip – Open-Source AI Video Clipper for Shorts",
     "description": "Turn long videos into captioned YouTube Shorts, TikToks, and Reels with open-source AI clipping, virality scoring, and face-aware 9:16 crops.",
     "openGraphDescription": "Turn long videos into captioned YouTube Shorts, TikToks, and Reels with open-source AI clipping.",
     "twitterDescription": "Open-source AI clipping, virality scoring, captions, and face-aware vertical crops.",
@@ -19,7 +19,7 @@
       "featureExports": "YouTube Shorts, TikTok, and Instagram Reels exports",
       "featureSelfHost": "Open-source self-hosting",
       "offerCategory": "Self-hosted open-source edition",
-      "ios": "The SupoClip iOS app: clip long videos into captioned vertical shorts from your iPhone.",
+      "ios": "The Easyclip iOS app: clip long videos into captioned vertical shorts from your iPhone.",
       "website": "Open-source AI video clipping for short-form content."
     }
   },
@@ -43,21 +43,21 @@
   "related": {
     "continueExploring": "Continue exploring",
     "keepReading": "Keep reading",
-    "relatedGuides": "Related SupoClip guides",
+    "relatedGuides": "Related Easyclip guides",
     "read": "Read"
   },
   "links": {
     "demo": {
       "label": "Demo",
       "eyebrow": "Demo",
-      "title": "See real clips SupoClip made from a long video",
+      "title": "See real clips Easyclip made from a long video",
       "description": "Watch the output, then jump to each moment in the original source video."
     },
     "ai_video_clipper": {
       "label": "AI video clipper",
       "eyebrow": "AI Video Clipping",
       "title": "AI video clipper for Shorts, Reels, and TikTok",
-      "description": "How SupoClip finds moments, scores candidates, reframes faces, and adds captions."
+      "description": "How Easyclip finds moments, scores candidates, reframes faces, and adds captions."
     },
     "youtube_shorts_clipper": {
       "label": "YouTube Shorts clipper",
@@ -74,13 +74,13 @@
     "blog_self_host_supoclip_docker": {
       "label": "Self-hosting guide",
       "eyebrow": "Self-Hosting Guide",
-      "title": "Self-host SupoClip with Docker Compose",
+      "title": "Self-host Easyclip with Docker Compose",
       "description": "Requirements, environment variables, first boot, a fully local setup, and production checks."
     },
     "blog_supoclip_vs_opusclip": {
-      "label": "SupoClip vs OpusClip",
+      "label": "Easyclip vs OpusClip",
       "eyebrow": "Comparison",
-      "title": "SupoClip vs OpusClip: a sourced comparison",
+      "title": "Easyclip vs OpusClip: a sourced comparison",
       "description": "Pricing model, deployment, watermarks, and workflow, with every claim linked to a source."
     },
     "blog_best_free_opusclip_alternative": {
@@ -90,9 +90,9 @@
       "description": "When a self-hosted, open-source clipper is the better route than a credit-based tool."
     },
     "blog_supoclip_vs_supo_live": {
-      "label": "SupoClip vs supo.live",
+      "label": "Easyclip vs supo.live",
       "eyebrow": "Comparison",
-      "title": "SupoClip vs supo.live: open-source control",
+      "title": "Easyclip vs supo.live: open-source control",
       "description": "Compare self-hosting, AI clipping, and editing workflows before choosing a video tool."
     },
     "sign_up": {
@@ -137,14 +137,14 @@
     "startClipping": "Start Clipping",
     "useHosted": "Use Hosted App",
     "viewSource": "View Source",
-    "appStoreAria": "Download SupoClip on the App Store",
+    "appStoreAria": "Download Easyclip on the App Store",
     "appStoreAlt": "Download on the App Store",
     "chips": {
       "crop": "9:16 Auto-Crop",
       "captions": "Word-Synced Captions",
       "virality": "Virality Scoring"
     },
-    "productHuntAlt": "SupoClip - Open-source AI clipper: long videos into viral shorts | Product Hunt",
+    "productHuntAlt": "Easyclip - Open-source AI clipper: long videos into viral shorts | Product Hunt",
     "player": {
       "source": "youtube.com · long-form source",
       "clipsFound": "{count} clips found",
@@ -257,7 +257,7 @@
   "guides": {
     "eyebrow": "Guides & Comparisons",
     "title": "Learn the complete clipping workflow",
-    "body": "Practical, source-backed pages for choosing a video clipper, self-hosting SupoClip, and turning long recordings into short-form content.",
+    "body": "Practical, source-backed pages for choosing a video clipper, self-hosting Easyclip, and turning long recordings into short-form content.",
     "read": "Read guide"
   },
   "cta": {

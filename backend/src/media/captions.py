@@ -47,7 +47,9 @@ def get_scaled_font_size(base_font_size: int, video_width: int) -> int:
     full 12-72 UI range produces a meaningful, monotonic size change.
     """
     scaled_size = round(base_font_size * (video_width / 560.0))
-    return max(26, min(132, scaled_size))
+    # The UI's 12-72 range tops out at 132px; display styles (one huge word)
+    # use template sizes above 72 and may grow further.
+    return max(26, min(132 if base_font_size <= 72 else 300, scaled_size))
 
 
 def get_subtitle_max_width(video_width: int) -> int:
@@ -357,6 +359,9 @@ def build_assemblyai_ass_subtitles(
     glow = bool(template.get("glow"))
     reveal = bool(template.get("reveal"))
     tilt = float(template.get("tilt") or 0)
+    emphasis_scale = float(template.get("emphasis_scale") or 1.0)
+    emphasis_glow = bool(template.get("emphasis_glow"))
+    letter_spacing = round(float(template.get("letter_spacing") or 0) * video_width / 1080)
     has_outline = template.get("stroke_color") is not None
     # Emphasis colouring only makes sense when something distinguishes words.
     enable_emphasis = (
@@ -461,7 +466,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,{font_name},{font_px},{primary},&H000000FF,{style_outline},{back_color},1,0,0,0,100,100,0,0,{border_style},{style_bord},{shadow_px},5,60,60,60,1
+Style: Default,{font_name},{font_px},{primary},&H000000FF,{style_outline},{back_color},1,0,0,0,100,100,{letter_spacing},0,{border_style},{style_bord},{shadow_px},5,60,60,60,1
 {hook_style_block}
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -556,16 +561,41 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             if end <= start:
                 end = start + 0.05
             spans = []
+            chunk_emphasis = {gj for gj in indices if enable_emphasis and gj in emphasis_idx}
+            if not chunk_emphasis and template.get("emphasize_longest") and len(chunk) > 1:
+                # Styles built around one standout word per phrase: when no power
+                # word is in this chunk, the longest word carries it.
+                longest = max(
+                    range(len(chunk)),
+                    key=lambda j: len(normalize_token(str(chunk[j].get("text", "")))),
+                )
+                chunk_emphasis = {indices[longest]}
             for local_j, word in enumerate(chunk):
                 gj = indices[local_j]
                 disp = render_text(gj, word)
-                color = emphasis_color if (enable_emphasis and gj in emphasis_idx) else primary
-                spans.append(f"{{{font_tag}\\c{color}}}{disp}")
+                emphasised = gj in chunk_emphasis
+                color = emphasis_color if emphasised else primary
+                tags = f"{font_tag}\\c{color}"
+                # Key-word styling: a bigger size and/or a coloured glow. Every
+                # span restates these so one word's override never leaks on.
+                if emphasis_scale != 1.0:
+                    tags += f"\\fs{round(font_px * (emphasis_scale if emphasised else 1.0))}"
+                if emphasis_glow:
+                    tags += (
+                        # A half-transparent halo keeps the letters themselves crisp.
+                        f"\\3c{emphasis_color}\\3a&H90&\\bord{max(2, font_px // 16)}\\blur{max(3, font_px // 8)}"
+                        if emphasised
+                        else f"\\3c{outline}\\3a&H00&\\bord{outline_px}\\blur{4 if glow else 0}"
+                    )
+                spans.append(f"{{{tags}}}{disp}")
             chunk_text = " ".join(spans)
 
             effect = ""
             if animation == "fade":
                 effect = "{\\fad(120,120)}"
+            elif animation == "blur":
+                # Each word sharpens in from a blur, then fades out.
+                effect = "{\\blur14\\t(0,180,\\blur0)\\fad(60,140)}"
             elif animation == "pop":
                 effect = (
                     "{\\fscx88\\fscy88\\t(0,130,\\fscx106\\fscy106)"

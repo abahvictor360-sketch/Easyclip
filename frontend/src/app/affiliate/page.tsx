@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       url: `${siteUrl}/affiliate`,
-      siteName: "SupoClip",
+      siteName: "Easyclip",
       type: "website",
       images: [{ url: `${siteUrl}${VIDEO.poster}`, width: 1920, height: 1080 }],
       videos: [{ url: `${siteUrl}${VIDEO.src}`, width: 1920, height: 1080, type: "video/mp4" }],
@@ -65,7 +65,7 @@ export default async function AffiliatePage() {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "SupoClip", item: siteUrl },
+          { "@type": "ListItem", position: 1, name: "Easyclip", item: siteUrl },
           { "@type": "ListItem", position: 2, name: t("badge"), item: `${siteUrl}/affiliate` },
         ],
       },
@@ -95,8 +95,8 @@ export default async function AffiliatePage() {
       <header className="border-b bg-background/95">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <Image src="/logo.png" alt="SupoClip" width={24} height={24} className="rounded-lg" />
-            <span className="text-lg font-bold tracking-tight">SupoClip</span>
+            <Image src="/logo.png" alt="Easyclip" width={24} height={24} className="rounded-lg" />
+            <span className="text-lg font-bold tracking-tight">Easyclip</span>
           </Link>
           <nav className="flex items-center gap-2" aria-label={t("nav.label")}>
             <Link href="/demo"><Button variant="ghost" size="sm">{t("nav.demo")}</Button></Link>

@@ -28,6 +28,7 @@ from .common import (
     logger,
 )
 from .face_detection import open_haar_cascade, open_yunet_detector
+from .branding import apply_branding_to_command
 from .ffmpeg import (
     build_audio_output_args,
     build_final_video_encode_args,
@@ -1269,10 +1270,12 @@ def render_reframed_clip_ffmpeg(
     speaker_words: Optional[List[Dict[str, Any]]] = None,
     vertical_plan: Optional[Tuple[str, str]] = None,
     reframe_plan: Optional[Dict[str, Any]] = None,
+    branding: Optional[Dict[str, Any]] = None,
 ) -> Tuple[bool, int, int]:
     """Render the final framed clip and (optionally) burn subtitles in one pass.
 
     ``reframe_plan`` reuses a speaker plan the caller already detected.
+    ``branding`` adds a logo/text tag overlay in the same pass.
 
     Collapsing reframing + subtitle burn into a single encode avoids a whole
     generation of re-encode loss. The pass uses the high-quality profile, CFR
@@ -1289,18 +1292,18 @@ def render_reframed_clip_ffmpeg(
 
     if output_format == "original":
         out_w, out_h = round_to_even(width), round_to_even(height)
-        if not subs:
+        if not subs and not branding:
             shutil.copyfile(input_path, output_path)
             return True, out_w, out_h
         command = [
             "ffmpeg", "-y", "-i", str(input_path),
-            "-vf", f"{subs},setsar=1",
+            "-vf", f"{subs},setsar=1" if subs else "setsar=1",
             *build_final_video_encode_args(),
             *audio_args,
             "-movflags", "+faststart",
             str(output_path),
         ]
-        return run_ffmpeg_command(command).returncode == 0, out_w, out_h
+        return run_ffmpeg_command(apply_branding_to_command(command, branding, out_w, out_h)).returncode == 0, out_w, out_h
 
     plan = reframe_plan or (
         detect_speaker_reframe_plan(input_path, output_format)
@@ -1329,7 +1332,7 @@ def render_reframed_clip_ffmpeg(
             "-movflags", "+faststart",
             str(output_path),
         ]
-        return run_ffmpeg_command(command).returncode == 0, 1080, 1920
+        return run_ffmpeg_command(apply_branding_to_command(command, branding, 1080, 1920)).returncode == 0, 1080, 1920
 
     if plan and plan["mode"] == "pan":
         video_filter = (
@@ -1346,7 +1349,7 @@ def render_reframed_clip_ffmpeg(
             "-movflags", "+faststart",
             str(output_path),
         ]
-        return run_ffmpeg_command(command).returncode == 0, 1080, 1920
+        return run_ffmpeg_command(apply_branding_to_command(command, branding, 1080, 1920)).returncode == 0, 1080, 1920
 
     # Default "vertical": face-aware for low webcams and calls, tracked crop
     # for a well-framed closeup, blurred full-frame fit for content shots.
@@ -1372,7 +1375,7 @@ def render_reframed_clip_ffmpeg(
             "-movflags", "+faststart",
             str(output_path),
         ]
-        return run_ffmpeg_command(command).returncode == 0, 1080, 1920
+        return run_ffmpeg_command(apply_branding_to_command(command, branding, 1080, 1920)).returncode == 0, 1080, 1920
 
     if subs:
         video_filter = f"{video_filter},{subs}"
@@ -1384,4 +1387,4 @@ def render_reframed_clip_ffmpeg(
         "-movflags", "+faststart",
         str(output_path),
     ]
-    return run_ffmpeg_command(command).returncode == 0, 1080, 1920
+    return run_ffmpeg_command(apply_branding_to_command(command, branding, 1080, 1920)).returncode == 0, 1080, 1920

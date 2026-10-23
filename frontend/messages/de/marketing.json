@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "SupoClip – Open-Source-KI-Videoclipper für Shorts",
+    "title": "Easyclip – Open-Source-KI-Videoclipper für Shorts",
     "description": "Mach aus langen Videos untertitelte YouTube Shorts, TikToks und Reels – mit Open-Source-KI-Clipping, Viralitätsbewertung und gesichtsbewussten 9:16-Schnitten.",
     "openGraphDescription": "Mach aus langen Videos untertitelte YouTube Shorts, TikToks und Reels mit Open-Source-KI-Clipping.",
     "twitterDescription": "Open-Source-KI-Clipping, Viralitätsbewertung, Untertitel und gesichtsbewusste Hochformatschnitte.",
@@ -19,7 +19,7 @@
       "featureExports": "Exporte für YouTube Shorts, TikTok und Instagram Reels",
       "featureSelfHost": "Open-Source-Self-Hosting",
       "offerCategory": "Selbst gehostete Open-Source-Edition",
-      "ios": "Die SupoClip-App für iOS: Mach aus langen Videos untertitelte Hochformat-Shorts auf deinem iPhone.",
+      "ios": "Die Easyclip-App für iOS: Mach aus langen Videos untertitelte Hochformat-Shorts auf deinem iPhone.",
       "website": "Open-Source-KI-Videoclipping für Kurzform-Content."
     }
   },
@@ -43,21 +43,21 @@
   "related": {
     "continueExploring": "Weiter stöbern",
     "keepReading": "Weiterlesen",
-    "relatedGuides": "Ähnliche SupoClip-Guides",
+    "relatedGuides": "Ähnliche Easyclip-Guides",
     "read": "Lesen"
   },
   "links": {
     "demo": {
       "label": "Demo",
       "eyebrow": "Demo",
-      "title": "Sieh echte Clips, die SupoClip aus einem langen Video gemacht hat",
+      "title": "Sieh echte Clips, die Easyclip aus einem langen Video gemacht hat",
       "description": "Schau dir das Ergebnis an und spring dann zu jedem Moment im Originalvideo."
     },
     "ai_video_clipper": {
       "label": "KI-Videoclipper",
       "eyebrow": "KI-Videoclipping",
       "title": "KI-Videoclipper für Shorts, Reels und TikTok",
-      "description": "Wie SupoClip Momente findet, Kandidaten bewertet, Gesichter neu rahmt und Untertitel setzt."
+      "description": "Wie Easyclip Momente findet, Kandidaten bewertet, Gesichter neu rahmt und Untertitel setzt."
     },
     "youtube_shorts_clipper": {
       "label": "YouTube-Shorts-Clipper",
@@ -74,13 +74,13 @@
     "blog_self_host_supoclip_docker": {
       "label": "Self-Hosting-Guide",
       "eyebrow": "Self-Hosting-Guide",
-      "title": "SupoClip mit Docker Compose selbst hosten",
+      "title": "Easyclip mit Docker Compose selbst hosten",
       "description": "Voraussetzungen, Umgebungsvariablen, erster Start, ein komplett lokales Setup und Produktionschecks."
     },
     "blog_supoclip_vs_opusclip": {
-      "label": "SupoClip vs OpusClip",
+      "label": "Easyclip vs OpusClip",
       "eyebrow": "Vergleich",
-      "title": "SupoClip vs OpusClip: ein Vergleich mit Quellen",
+      "title": "Easyclip vs OpusClip: ein Vergleich mit Quellen",
       "description": "Preismodell, Betrieb, Wasserzeichen und Ablauf, jede Aussage mit einer Quelle verlinkt."
     },
     "blog_best_free_opusclip_alternative": {
@@ -90,9 +90,9 @@
       "description": "Wann ein selbst gehosteter Open-Source-Clipper die bessere Wahl ist als ein Credit-Tool."
     },
     "blog_supoclip_vs_supo_live": {
-      "label": "SupoClip vs supo.live",
+      "label": "Easyclip vs supo.live",
       "eyebrow": "Vergleich",
-      "title": "SupoClip vs supo.live: Open-Source-Kontrolle",
+      "title": "Easyclip vs supo.live: Open-Source-Kontrolle",
       "description": "Vergleich Self-Hosting, KI-Clipping und Schnittabläufe, bevor du ein Videotool wählst."
     },
     "sign_up": {
@@ -137,14 +137,14 @@
     "startClipping": "Jetzt clippen",
     "useHosted": "Gehostete App nutzen",
     "viewSource": "Quellcode ansehen",
-    "appStoreAria": "SupoClip im App Store laden",
+    "appStoreAria": "Easyclip im App Store laden",
     "appStoreAlt": "Im App Store laden",
     "chips": {
       "crop": "9:16-Auto-Zuschnitt",
       "captions": "Wortgenaue Untertitel",
       "virality": "Viralitätsbewertung"
     },
-    "productHuntAlt": "SupoClip - Open-Source-KI-Clipper: lange Videos werden virale Shorts | Product Hunt",
+    "productHuntAlt": "Easyclip - Open-Source-KI-Clipper: lange Videos werden virale Shorts | Product Hunt",
     "player": {
       "source": "youtube.com · langes Quellvideo",
       "clipsFound": "{count} Clips gefunden",
@@ -257,7 +257,7 @@
   "guides": {
     "eyebrow": "Guides & Vergleiche",
     "title": "Lern den kompletten Clipping-Ablauf",
-    "body": "Praktische Seiten mit Quellen: Videoclipper wählen, SupoClip selbst hosten und lange Aufnahmen zu Kurzform-Content machen.",
+    "body": "Praktische Seiten mit Quellen: Videoclipper wählen, Easyclip selbst hosten und lange Aufnahmen zu Kurzform-Content machen.",
     "read": "Guide lesen"
   },
   "cta": {

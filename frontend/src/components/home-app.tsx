@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   AlertCircle, ArrowRight, ArrowUp, Captions, CaptionsOff, Check, ChevronDown, Crop, FileVideo,
-  Loader2, Music, Paintbrush, Paperclip, Upload, Wand2, X, Youtube,
+  Loader2, Music, Paintbrush, Paperclip, Tag, Upload, Wand2, X, Youtube,
 } from "lucide-react";
 import { CaptionSizeControl } from "@/components/caption-size-control";
 import { FONT_SEARCH_THRESHOLD, getYouTubeThumbnailUrl, uploadVideoFile } from "@/lib/video-upload";
@@ -46,6 +46,12 @@ interface CaptionTemplate {
 type OutputFormat = "vertical" | "vertical_pan" | "vertical_split" | "original";
 
 const FRAMING_IDS: OutputFormat[] = ["vertical", "vertical_pan", "vertical_split", "original"];
+
+type BrandPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+const BRAND_POSITIONS: BrandPosition[] = ["top-left", "top-right", "bottom-left", "bottom-right"];
+const BRAND_STORAGE_KEY = "easyclip.branding";
+// Matches the backend's limit (media/branding.py MAX_LOGO_BYTES).
+const BRAND_LOGO_MAX_BYTES = 2_000_000;
 
 const COLOR_SWATCHES = ["#FFFFFF", "#000000", "#FFD700", "#FF6B6B", "#4ECDC4", "#45B7D1"];
 
@@ -97,6 +103,49 @@ export default function HomeApp() {
   const [backgroundMusic, setBackgroundMusic] = useState(false);
   const [soundEffects, setSoundEffects] = useState(false);
   const soundCount = Number(backgroundMusic) + Number(soundEffects);
+  const [brandText, setBrandText] = useState("");
+  const [brandPosition, setBrandPosition] = useState<BrandPosition>("top-right");
+  const [brandLogo, setBrandLogo] = useState<string | null>(null);
+  const [brandError, setBrandError] = useState("");
+  const brandActive = Boolean(brandText.trim() || brandLogo);
+
+  // The logo and tag are a per-browser convenience, remembered between visits.
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(BRAND_STORAGE_KEY) || "null");
+      if (saved && typeof saved === "object") {
+        if (typeof saved.text === "string") setBrandText(saved.text);
+        if (BRAND_POSITIONS.includes(saved.position)) setBrandPosition(saved.position);
+        if (typeof saved.logo === "string" && saved.logo.startsWith("data:image/")) setBrandLogo(saved.logo);
+      }
+    } catch {
+      // Storage can be unavailable (private window); branding then starts empty.
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(BRAND_STORAGE_KEY, JSON.stringify({ text: brandText, position: brandPosition, logo: brandLogo }));
+    } catch {
+      // Quota or privacy settings; branding still applies to this generation.
+    }
+  }, [brandText, brandPosition, brandLogo]);
+
+  const handleBrandLogo = (file: File | undefined) => {
+    setBrandError("");
+    if (!file) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      setBrandError(t("brandLogoType"));
+      return;
+    }
+    if (file.size > BRAND_LOGO_MAX_BYTES) {
+      setBrandError(t("brandLogoTooBig"));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setBrandLogo(typeof reader.result === "string" ? reader.result : null);
+    reader.readAsDataURL(file);
+  };
 
   const [recent, setRecent] = useState<GenerationSummary[] | null>(null);
   const [billingSummary, updateBillingSummary] = useBillingSummary(Boolean(session?.user?.id));
@@ -258,6 +307,9 @@ export default function HomeApp() {
           filtered_words: normalizedFilteredWords,
           background_music: backgroundMusic,
           sound_effects: soundEffects,
+          branding: brandActive
+            ? { text: brandText.trim() || null, position: brandPosition, logo_data_url: brandLogo }
+            : undefined,
         }),
       });
 
@@ -608,6 +660,68 @@ export default function HomeApp() {
                       <p className="text-xs text-muted-foreground">{t("soundEffectsHint")}</p>
                     </div>
                     <Switch id="sound-effects" checked={soundEffects} onCheckedChange={setSoundEffects} />
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Chip disabled={controlsDisabled} active={brandActive}>
+                    <Tag className="size-3.5" />{t("brand")}
+                    <ChevronDown className="size-3 opacity-60" />
+                  </Chip>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-[min(92vw,340px)] space-y-4 rounded-2xl">
+                  <div>
+                    <p className="text-sm font-medium">{t("brandTitle")}</p>
+                    <p className="text-xs text-muted-foreground">{t("brandBody")}</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <p className="text-sm font-medium">{t("brandLogo")}</p>
+                    <div className="flex items-center gap-3">
+                      {brandLogo ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- local data URL preview
+                        <img src={brandLogo} alt={t("brandLogoPreview")} className="size-12 rounded-md border bg-muted object-contain" />
+                      ) : (
+                        <span className="flex size-12 items-center justify-center rounded-md border border-dashed text-muted-foreground"><Tag className="size-4" /></span>
+                      )}
+                      <label className="cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent">
+                        {brandLogo ? t("brandReplace") : t("brandUpload")}
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          className="sr-only"
+                          onChange={(e) => { handleBrandLogo(e.target.files?.[0]); e.target.value = ""; }}
+                        />
+                      </label>
+                      {brandLogo && (
+                        <button type="button" onClick={() => setBrandLogo(null)} className="text-xs text-muted-foreground hover:text-foreground">
+                          {t("brandRemove")}
+                        </button>
+                      )}
+                    </div>
+                    {brandError && <p className="text-xs text-destructive">{brandError}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="brand-text" className="text-sm font-medium">{t("brandText")}</label>
+                    <Input id="brand-text" value={brandText} maxLength={40} onChange={(e) => setBrandText(e.target.value)} placeholder={t("brandTextPlaceholder")} className="h-8" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <p className="text-sm font-medium">{t("brandPosition")}</p>
+                    <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={t("brandPosition")}>
+                      {BRAND_POSITIONS.map((position) => (
+                        <button
+                          key={position}
+                          type="button"
+                          role="radio"
+                          aria-checked={brandPosition === position}
+                          onClick={() => setBrandPosition(position)}
+                          className={cn("rounded-lg border px-2.5 py-1.5 text-xs transition-colors hover:bg-accent", brandPosition === position && "border-foreground ring-1 ring-foreground")}
+                        >
+                          {t(`brandPositions.${position}`)}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </PopoverContent>
               </Popover>

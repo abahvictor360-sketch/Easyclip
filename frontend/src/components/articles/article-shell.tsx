@@ -67,7 +67,7 @@ export async function ArticleShell({
         datePublished: post.publishedAt,
         dateModified: post.updatedAt,
         author: { "@type": "Organization", name: post.author },
-        publisher: { "@type": "Organization", name: "SupoClip", url: siteUrl, logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` } },
+        publisher: { "@type": "Organization", name: "Easyclip", url: siteUrl, logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` } },
         articleSection: post.category,
         keywords: post.keywords.join(", "),
         inLanguage: intlLocale(locale),
@@ -90,7 +90,7 @@ export async function ArticleShell({
       <header className="border-b">
         <nav aria-label={t("shell.blogNav")} className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-5">
           <Link href="/" className="flex items-center gap-2.5 text-xl font-bold">
-            <Image src="/logo.png" alt="" width={30} height={30} className="rounded-lg" />SupoClip
+            <Image src="/logo.png" alt="" width={30} height={30} className="rounded-lg" />Easyclip
           </Link>
           <div className="flex items-center gap-5 text-sm">
             <Link href="/blog" className="underline underline-offset-4">{t("shell.allArticles")}</Link>

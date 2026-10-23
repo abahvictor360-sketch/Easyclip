@@ -211,7 +211,7 @@ export default function LandingPage() {
           <Link href="/" className="flex items-center gap-2.5 group">
             <Image
               src="/logo.png"
-              alt="SupoClip"
+              alt="Easyclip"
               width={24}
               height={24}
               className="rounded-lg transition-transform group-hover:scale-105"
@@ -223,7 +223,7 @@ export default function LandingPage() {
                   "var(--font-syne), var(--font-geist-sans), system-ui",
               }}
             >
-              SupoClip
+              Easyclip
             </span>
           </Link>
 

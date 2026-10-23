@@ -2,18 +2,18 @@
   "bindingNotice": "Die englische Fassung dieses Dokuments ist die rechtlich verbindliche. Diese Übersetzung dient nur deiner Orientierung.",
   "hostedApp": "Gehostete App",
   "lastUpdated": "Zuletzt aktualisiert: {date}",
-  "back": "Zurück zu SupoClip",
+  "back": "Zurück zu Easyclip",
   "terms": {
-    "metaTitle": "Nutzungsbedingungen | SupoClip",
-    "metaDescription": "Die Bedingungen für deine Nutzung der SupoClip-Apps und des gehosteten Video-Clipping-Dienstes, einschließlich Abos, die du im Web oder über den App Store kaufst.",
-    "ogTitle": "SupoClip-Nutzungsbedingungen",
-    "ogDescription": "Die Bedingungen für deine Nutzung von SupoClip.",
+    "metaTitle": "Nutzungsbedingungen | Easyclip",
+    "metaDescription": "Die Bedingungen für deine Nutzung der Easyclip-Apps und des gehosteten Video-Clipping-Dienstes, einschließlich Abos, die du im Web oder über den App Store kaufst.",
+    "ogTitle": "Easyclip-Nutzungsbedingungen",
+    "ogDescription": "Die Bedingungen für deine Nutzung von Easyclip.",
     "title": "Nutzungsbedingungen",
     "privacyLink": "Datenschutzerklärung",
     "agreement": {
       "title": "Vereinbarung",
-      "p1": "Diese Nutzungsbedingungen („Bedingungen“) regeln deine Nutzung der SupoClip-Apps und des gehosteten Dienstes (der „Dienst“), der lange Videos in kurze Clips mit Untertiteln verwandelt. Mit dem Erstellen eines Kontos oder der Nutzung des Dienstes stimmst du diesen Bedingungen zu. Wenn du nicht einverstanden bist, nutze den Dienst nicht.",
-      "p2": "SupoClip gibt es auch als Open-Source-Software, die du selbst hosten kannst. Diese Bedingungen gelten für den von SupoClip betriebenen gehosteten Dienst; selbst gehostete Instanzen unterliegen der jeweiligen Open-Source-Lizenz und den eigenen Bedingungen der betreibenden Person."
+      "p1": "Diese Nutzungsbedingungen („Bedingungen“) regeln deine Nutzung der Easyclip-Apps und des gehosteten Dienstes (der „Dienst“), der lange Videos in kurze Clips mit Untertiteln verwandelt. Mit dem Erstellen eines Kontos oder der Nutzung des Dienstes stimmst du diesen Bedingungen zu. Wenn du nicht einverstanden bist, nutze den Dienst nicht.",
+      "p2": "Easyclip gibt es auch als Open-Source-Software, die du selbst hosten kannst. Diese Bedingungen gelten für den von Easyclip betriebenen gehosteten Dienst; selbst gehostete Instanzen unterliegen der jeweiligen Open-Source-Lizenz und den eigenen Bedingungen der betreibenden Person."
     },
     "account": {
       "title": "Dein Konto",
@@ -43,7 +43,7 @@
     },
     "ip": {
       "title": "Geistiges Eigentum",
-      "p1": "Der Dienst, einschließlich Software, Design und Marke, gehört SupoClip oder den jeweiligen Lizenzgebern. Die Open-Source-Bestandteile stehen unter ihren jeweiligen Lizenzen. Diese Bedingungen räumen dir keine Rechte an unseren Marken ein."
+      "p1": "Der Dienst, einschließlich Software, Design und Marke, gehört Easyclip oder den jeweiligen Lizenzgebern. Die Open-Source-Bestandteile stehen unter ihren jeweiligen Lizenzen. Diese Bedingungen räumen dir keine Rechte an unseren Marken ein."
     },
     "disclaimers": {
       "title": "Haftungsausschlüsse",
@@ -51,7 +51,7 @@
     },
     "liability": {
       "title": "Haftungsbeschränkung",
-      "p1": "Soweit gesetzlich zulässig, haftet SupoClip nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden und nicht für entgangenen Gewinn, Datenverlust oder Verlust von Goodwill. Unsere Gesamthaftung für Ansprüche im Zusammenhang mit dem Dienst ist auf den Betrag begrenzt, den du uns in den zwölf Monaten vor Entstehung des Anspruchs gezahlt hast."
+      "p1": "Soweit gesetzlich zulässig, haftet Easyclip nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden und nicht für entgangenen Gewinn, Datenverlust oder Verlust von Goodwill. Unsere Gesamthaftung für Ansprüche im Zusammenhang mit dem Dienst ist auf den Betrag begrenzt, den du uns in den zwölf Monaten vor Entstehung des Anspruchs gezahlt hast."
     },
     "termination": {
       "title": "Beendigung",
@@ -67,15 +67,15 @@
     }
   },
   "privacy": {
-    "metaTitle": "Datenschutzerklärung | SupoClip",
-    "metaDescription": "Wie SupoClip deine Daten erhebt, nutzt, teilt und schützt, wenn du den SupoClip-Video-Clipping-Dienst nutzt.",
-    "ogTitle": "SupoClip-Datenschutzerklärung",
-    "ogDescription": "Wie SupoClip mit deinen Daten umgeht.",
+    "metaTitle": "Datenschutzerklärung | Easyclip",
+    "metaDescription": "Wie Easyclip deine Daten erhebt, nutzt, teilt und schützt, wenn du den Easyclip-Video-Clipping-Dienst nutzt.",
+    "ogTitle": "Easyclip-Datenschutzerklärung",
+    "ogDescription": "Wie Easyclip mit deinen Daten umgeht.",
     "title": "Datenschutzerklärung",
     "overview": {
       "title": "Überblick",
-      "p1": "Diese Datenschutzerklärung erklärt, wie SupoClip („SupoClip“, „wir“, „uns“) Informationen erhebt, nutzt, teilt und schützt, wenn du die SupoClip-Apps und den gehosteten Dienst (den „Dienst“) nutzt, der lange Videos in kurze Clips mit Untertiteln verwandelt.",
-      "p2": "SupoClip gibt es auch als Open-Source-Software, die du selbst hosten kannst. Wenn du eine selbst gehostete Instanz nutzt, die du oder jemand anderes betreibt, ist die betreibende Person—nicht SupoClip—für die Daten verantwortlich, die diese Instanz verarbeitet. Diese Erklärung beschreibt den von SupoClip betriebenen gehosteten Dienst."
+      "p1": "Diese Datenschutzerklärung erklärt, wie Easyclip („Easyclip“, „wir“, „uns“) Informationen erhebt, nutzt, teilt und schützt, wenn du die Easyclip-Apps und den gehosteten Dienst (den „Dienst“) nutzt, der lange Videos in kurze Clips mit Untertiteln verwandelt.",
+      "p2": "Easyclip gibt es auch als Open-Source-Software, die du selbst hosten kannst. Wenn du eine selbst gehostete Instanz nutzt, die du oder jemand anderes betreibt, ist die betreibende Person—nicht Easyclip—für die Daten verantwortlich, die diese Instanz verarbeitet. Diese Erklärung beschreibt den von Easyclip betriebenen gehosteten Dienst."
     },
     "collect": {
       "title": "Welche Informationen wir erheben",
@@ -89,7 +89,7 @@
       "usage": "Wir erheben Sitzungskennungen, die IP-Adresse und grundlegende technische Protokolle, um den Dienst zu betreiben, abzusichern und zu debuggen. Wenn für die gehostete Website Analysen aktiv sind, nutzen wir einen datenschutzfreundlichen Analyseanbieter, der keine seitenübergreifenden Werbeprofile erstellt. Auf der gehosteten Website nutzen wir außerdem PostHog, um zu verstehen, wie das Produkt genutzt wird, um Sitzungen wiederzugeben (alles, was du in Formularfelder eingibst, wird maskiert) und um Fehlerberichte zu erhalten, damit wir Probleme beheben können.",
       "campaignLabel": "Kampagnen- und Empfehlungsdaten.",
       "campaign1": "Wenn du unsere Website abgemeldet besuchst, merkt sich dein Browser bis zu 90 Tage, wie du das erste Mal angekommen bist. Das liegt im lokalen Speicher deines Browsers, nicht in einem Cookie. Der Eintrag enthält Kampagnen-Tags aus dem Link, dem du gefolgt bist (etwa <utmSource>utm_source</utmSource>, <utmCampaign>utm_campaign</utmCampaign> oder einen <ref>ref</ref>-Code), die Domain der verweisenden Website (nicht die volle Adresse), die Seite, auf der du gelandet bist, und den Zeitpunkt dieses Besuchs. Seitenadressen werden auf die Route gekürzt, deshalb werden Share-Links und Projekt-IDs nie gespeichert. Solange du angemeldet bist, wird nichts aufgezeichnet.",
-      "campaign2": "Das erste Konto, das sich in diesem Browser anmeldet, übernimmt den Eintrag. Danach wird er aus dem Browser gelöscht, damit kein anderes Konto ihn nutzen kann. Wenn das Konto neu ist, speichern wir den Eintrag einmal kurz nach der Registrierung daran. Wir merken uns auch, wann du zum ersten Mal einen Clip herunterlädst oder exportierst. Damit lernen wir, welche Kanäle Menschen bringen, die SupoClip nützlich finden. Wenn Analysen aktiv sind, enthalten die Registrierungs- und Clip-Export-Ereignisse, die wir an unseren Analyseanbieter senden, dieselben Kampagnenfelder. Wir nutzen diese Informationen nicht für Werbung und verkaufen sie nicht. Du kannst den Eintrag aus deinem Browser entfernen, indem du die Website-Daten für supoclip.com löschst."
+      "campaign2": "Das erste Konto, das sich in diesem Browser anmeldet, übernimmt den Eintrag. Danach wird er aus dem Browser gelöscht, damit kein anderes Konto ihn nutzen kann. Wenn das Konto neu ist, speichern wir den Eintrag einmal kurz nach der Registrierung daran. Wir merken uns auch, wann du zum ersten Mal einen Clip herunterlädst oder exportierst. Damit lernen wir, welche Kanäle Menschen bringen, die Easyclip nützlich finden. Wenn Analysen aktiv sind, enthalten die Registrierungs- und Clip-Export-Ereignisse, die wir an unseren Analyseanbieter senden, dieselben Kampagnenfelder. Wir nutzen diese Informationen nicht für Werbung und verkaufen sie nicht. Du kannst den Eintrag aus deinem Browser entfernen, indem du die Website-Daten für supoclip.com löschst."
     },
     "use": {
       "title": "Wie wir deine Informationen nutzen",
@@ -104,16 +104,16 @@
     },
     "social": {
       "title": "Verbundene Social-Konten",
-      "p1": "Du kannst ein YouTube-, TikTok- oder Instagram-Konto verbinden, damit SupoClip Clips für dich veröffentlicht. Das Verbinden ist optional, läuft über die eigene Anmeldeseite der Plattform, und wir sehen nie dein Passwort für diese Plattform.",
+      "p1": "Du kannst ein YouTube-, TikTok- oder Instagram-Konto verbinden, damit Easyclip Clips für dich veröffentlicht. Das Verbinden ist optional, läuft über die eigene Anmeldeseite der Plattform, und wir sehen nie dein Passwort für diese Plattform.",
       "accessLabel": "Worauf wir zugreifen und warum.",
       "li1": "<label>Basisprofil</label> (Konto-ID, Anzeigename, Nutzername, Profilbild) — um zu zeigen, welches Konto verbunden ist.",
       "li2": "<label>Erlaubnis zum Hochladen oder Veröffentlichen</label> — um die Clips zu posten, die du auswählst, mit Titel, Bildunterschrift, Sichtbarkeit und Zeitpunkt, die du festlegst. Wir posten nie etwas, worum du uns nicht gebeten hast.",
-      "li3": "<label>Statistiken für Beiträge, die über SupoClip entstanden sind</label> (Aufrufe, Likes, Kommentare, Shares) — um dir zu zeigen, wie deine Clips laufen, und, sobald genug Ergebnisse da sind, die Clip-Auswahl für deine künftigen Videos anzupassen.",
+      "li3": "<label>Statistiken für Beiträge, die über Easyclip entstanden sind</label> (Aufrufe, Likes, Kommentare, Shares) — um dir zu zeigen, wie deine Clips laufen, und, sobald genug Ergebnisse da sind, die Clip-Auswahl für deine künftigen Videos anzupassen.",
       "tokens": "Wir speichern die Zugriffstokens der Plattform verschlüsselt und nutzen sie nur für die Zwecke oben. Wir verkaufen diese Daten nicht, nutzen sie nicht für Werbung, teilen sie nicht mit anderen Nutzern und trainieren damit keine allgemeinen KI-Modelle.",
       "disconnectLabel": "Trennen und Löschen.",
-      "disconnect": "Du kannst ein Konto jederzeit auf der Social-Seite trennen. Dabei werden die gespeicherten Tokens sofort gelöscht, noch geplante Beiträge für dieses Konto abgebrochen und die Plattform gebeten, den Zugriff von SupoClip zu widerrufen, soweit sie das unterstützt. Du kannst auch Einträge veröffentlichter Beiträge samt Statistiken aus der App entfernen. Wenn du dein SupoClip-Konto löschst, werden all diese Daten entfernt. Du kannst den Zugriff auch bei der Plattform selbst widerrufen, bei Google unter <google>Google-Sicherheitseinstellungen</google>. Wenn wir diese Daten löschen sollen, schreib an <email>privacy@supoclip.com</email>.",
+      "disconnect": "Du kannst ein Konto jederzeit auf der Social-Seite trennen. Dabei werden die gespeicherten Tokens sofort gelöscht, noch geplante Beiträge für dieses Konto abgebrochen und die Plattform gebeten, den Zugriff von Easyclip zu widerrufen, soweit sie das unterstützt. Du kannst auch Einträge veröffentlichter Beiträge samt Statistiken aus der App entfernen. Wenn du dein Easyclip-Konto löschst, werden all diese Daten entfernt. Du kannst den Zugriff auch bei der Plattform selbst widerrufen, bei Google unter <google>Google-Sicherheitseinstellungen</google>. Wenn wir diese Daten löschen sollen, schreib an <email>privacy@supoclip.com</email>.",
       "youtubeLabel": "YouTube und Google.",
-      "youtube": "SupoClip nutzt YouTube API Services. Wenn du ein YouTube-Konto verbindest, stimmst du den <youtubeTerms>YouTube-Nutzungsbedingungen</youtubeTerms> zu, und wie Google deine Daten behandelt, steht in der <googlePrivacy>Datenschutzerklärung von Google</googlePrivacy>. SupoClips Nutzung und Weitergabe von Informationen aus Google-APIs an eine andere App hält sich an die <googleApi>Google API Services User Data Policy</googleApi>, einschließlich der Limited-Use-Anforderungen."
+      "youtube": "Easyclip nutzt YouTube API Services. Wenn du ein YouTube-Konto verbindest, stimmst du den <youtubeTerms>YouTube-Nutzungsbedingungen</youtubeTerms> zu, und wie Google deine Daten behandelt, steht in der <googlePrivacy>Datenschutzerklärung von Google</googlePrivacy>. Easyclips Nutzung und Weitergabe von Informationen aus Google-APIs an eine andere App hält sich an die <googleApi>Google API Services User Data Policy</googleApi>, einschließlich der Limited-Use-Anforderungen."
     },
     "processors": {
       "title": "Dienstleister und Unterauftragsverarbeiter",

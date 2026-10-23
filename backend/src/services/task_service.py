@@ -475,6 +475,7 @@ class TaskService(ClipEditingMixin):
                     add_subtitles,
                     normalized_cleanup_settings,
                     max_short_side=output_short_side,
+                    branding=source_metadata.get("branding"),
                 )
                 pending_clip_path = Path(clip_info["path"]) if clip_info else None
                 await check_cancelled()

@@ -46,7 +46,7 @@
   "announcements": {
     "whatsNew": "Neuigkeiten",
     "whatsNewUnread": "Neuigkeiten, {count, plural, one {# ungelesene Ankündigung} other {# ungelesene Ankündigungen}}",
-    "title": "Neuigkeiten in SupoClip",
+    "title": "Neuigkeiten in Easyclip",
     "close": "Ankündigungen schließen",
     "popover": "Ankündigungen",
     "new": "Neu"

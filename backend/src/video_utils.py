@@ -264,8 +264,12 @@ def create_optimized_clip(
     hook_title: Optional[str] = None,
     extend_to_sentence: bool = True,
     layout_report: Optional[Dict[str, Any]] = None,
+    branding: Optional[Dict[str, Any]] = None,
 ) -> bool:
-    """Create clip with optional subtitles. output_format: 'vertical' (9:16) or 'original' (keep source size)."""
+    """Create clip with optional subtitles. output_format: 'vertical' (9:16) or 'original' (keep source size).
+
+    ``branding`` burns a logo and/or text tag into the clip (see media.branding).
+    """
     try:
         if keep_ranges:
             effective_keep_ranges = normalize_source_ranges(keep_ranges)
@@ -425,6 +429,7 @@ def create_optimized_clip(
                 speaker_words=speaker_words,
                 vertical_plan=vertical_plan,
                 reframe_plan=split_plan,
+                branding=branding,
             )
             if not framed_ok:
                 raise RuntimeError("ffmpeg reframe render failed")
@@ -701,7 +706,7 @@ def create_clips_with_transitions(
         f"Creating {len(segments)} standalone clips subtitles={add_subtitles} template '{caption_template}'"
     )
     logger.info(
-        "Inter-clip transitions are disabled for standalone SupoClip exports"
+        "Inter-clip transitions are disabled for standalone Easyclip exports"
     )
     return create_clips_from_segments(
         video_path,

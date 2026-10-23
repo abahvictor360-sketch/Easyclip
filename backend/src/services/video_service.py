@@ -116,7 +116,7 @@ class VideoService:
             "relevance_score": 0.25,
             "reasoning": (
                 "AI analysis did not identify a strong standalone segment, "
-                "so SupoClip generated the first available portion of the video."
+                "so Easyclip generated the first available portion of the video."
             ),
             "virality_score": 0,
             "hook_score": 0,
@@ -294,6 +294,7 @@ class VideoService:
         add_subtitles: bool = True,
         cleanup_settings: Optional[Dict[str, Any]] = None,
         max_short_side: Optional[int] = None,
+        branding: Optional[Dict[str, Any]] = None,
     ) -> Optional[Dict[str, Any]]:
         """Render a single clip in the thread pool and return clip_info dict, or None on failure.
 
@@ -366,6 +367,7 @@ class VideoService:
                 keep_ranges,
                 segment.get("hook_title"),
                 extend_to_sentence=False,
+                branding=branding,
             )
 
             if not success:

@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: t("index.ogDescription"),
       type: "website",
       url,
-      siteName: "SupoClip",
+      siteName: "Easyclip",
     },
   };
 }
@@ -38,12 +38,12 @@ export default async function BlogIndexPage() {
       <header className="border-b bg-background/95">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <Image src="/logo.png" alt="SupoClip" width={24} height={24} className="rounded-lg" />
+            <Image src="/logo.png" alt="Easyclip" width={24} height={24} className="rounded-lg" />
             <span
               className="text-lg font-bold tracking-tight"
               style={{ fontFamily: "var(--font-syne), var(--font-geist-sans), system-ui" }}
             >
-              SupoClip
+              Easyclip
             </span>
           </Link>
           <div className="flex items-center gap-2">

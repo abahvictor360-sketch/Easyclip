@@ -130,11 +130,16 @@ ANALYSIS_UTTERANCE_SPLIT_THRESHOLD_WORDS = 80
 
 _WHISPER_MODEL_CACHE: Dict[str, Any] = {}
 
-FINAL_VIDEO_CRF = 19
+# "veryfast" encodes about twice as fast as "medium"; the lower CRF keeps the
+# picture as clean. Override with FINAL_VIDEO_PRESET / FINAL_VIDEO_CRF.
+FINAL_VIDEO_CRF = int(os.getenv("FINAL_VIDEO_CRF", "18"))
 
-FINAL_VIDEO_PRESET = "medium"
+FINAL_VIDEO_PRESET = os.getenv("FINAL_VIDEO_PRESET", "veryfast")
 
 INTERMEDIATE_CRF = 16
+
+# The intermediate cut is re-encoded by the final pass, so speed beats size here.
+INTERMEDIATE_VIDEO_PRESET = os.getenv("INTERMEDIATE_VIDEO_PRESET", "ultrafast")
 
 OUTPUT_FPS = 30
 

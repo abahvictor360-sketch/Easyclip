@@ -44,10 +44,10 @@ export async function generateMetadata(): Promise<Metadata> {
   },
   description: t("description"),
   metadataBase: new URL(getSiteUrl()),
-  applicationName: "SupoClip",
-  authors: [{ name: "SupoClip Team", url: getSiteUrl() }],
-  creator: "SupoClip Team",
-  publisher: "SupoClip",
+  applicationName: "Easyclip",
+  authors: [{ name: "Easyclip Team", url: getSiteUrl() }],
+  creator: "Easyclip Team",
+  publisher: "Easyclip",
   category: t("category"),
   icons: {
     icon: "/icon.png",
@@ -58,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
   openGraph: {
     title: t("title"),
     description: t("openGraphDescription"),
-    siteName: "SupoClip",
+    siteName: "Easyclip",
     type: "website",
   },
   twitter: {

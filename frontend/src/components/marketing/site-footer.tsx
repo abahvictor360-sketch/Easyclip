@@ -44,9 +44,9 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
         <div>
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="SupoClip" width={24} height={24} className="rounded-md" />
+            <Image src="/logo.png" alt="Easyclip" width={24} height={24} className="rounded-md" />
             <span className="text-sm font-semibold" style={{ fontFamily: "var(--font-syne), system-ui" }}>
-              SupoClip
+              Easyclip
             </span>
           </Link>
           <p className="mt-3 max-w-xs text-xs leading-6 text-muted-foreground">

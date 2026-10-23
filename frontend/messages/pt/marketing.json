@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "SupoClip – Clipper de vídeo com IA de código aberto para Shorts",
+    "title": "Easyclip – Clipper de vídeo com IA de código aberto para Shorts",
     "description": "Transforme vídeos longos em YouTube Shorts, TikToks e Reels legendados, com clipping de IA de código aberto, pontuação de viralidade e cortes 9:16 centrados no rosto.",
     "openGraphDescription": "Transforme vídeos longos em YouTube Shorts, TikToks e Reels legendados com clipping de IA de código aberto.",
     "twitterDescription": "Clipping de IA de código aberto, pontuação de viralidade, legendas e cortes verticais centrados no rosto.",
@@ -19,7 +19,7 @@
       "featureExports": "Exportações para YouTube Shorts, TikTok e Instagram Reels",
       "featureSelfHost": "Auto-hospedagem de código aberto",
       "offerCategory": "Edição de código aberto auto-hospedada",
-      "ios": "O app SupoClip para iOS: transforme vídeos longos em shorts verticais legendados no seu iPhone.",
+      "ios": "O app Easyclip para iOS: transforme vídeos longos em shorts verticais legendados no seu iPhone.",
       "website": "Clipping de vídeo com IA de código aberto para conteúdo curto."
     }
   },
@@ -43,21 +43,21 @@
   "related": {
     "continueExploring": "Continue explorando",
     "keepReading": "Continue lendo",
-    "relatedGuides": "Guias relacionados do SupoClip",
+    "relatedGuides": "Guias relacionados do Easyclip",
     "read": "Ler"
   },
   "links": {
     "demo": {
       "label": "Demo",
       "eyebrow": "Demo",
-      "title": "Veja clipes reais que o SupoClip fez a partir de um vídeo longo",
+      "title": "Veja clipes reais que o Easyclip fez a partir de um vídeo longo",
       "description": "Assista ao resultado e pule para cada momento no vídeo original."
     },
     "ai_video_clipper": {
       "label": "Clipper de vídeo com IA",
       "eyebrow": "Clipping de vídeo com IA",
       "title": "Clipper de vídeo com IA para Shorts, Reels e TikTok",
-      "description": "Como o SupoClip encontra momentos, pontua candidatos, reenquadra rostos e adiciona legendas."
+      "description": "Como o Easyclip encontra momentos, pontua candidatos, reenquadra rostos e adiciona legendas."
     },
     "youtube_shorts_clipper": {
       "label": "Clipper de YouTube Shorts",
@@ -74,13 +74,13 @@
     "blog_self_host_supoclip_docker": {
       "label": "Guia de auto-hospedagem",
       "eyebrow": "Guia de auto-hospedagem",
-      "title": "Auto-hospede o SupoClip com Docker Compose",
+      "title": "Auto-hospede o Easyclip com Docker Compose",
       "description": "Requisitos, variáveis de ambiente, primeira inicialização, uma instalação totalmente local e checagens de produção."
     },
     "blog_supoclip_vs_opusclip": {
-      "label": "SupoClip vs OpusClip",
+      "label": "Easyclip vs OpusClip",
       "eyebrow": "Comparação",
-      "title": "SupoClip vs OpusClip: uma comparação com fontes",
+      "title": "Easyclip vs OpusClip: uma comparação com fontes",
       "description": "Modelo de preço, implantação, marcas d'água e fluxo de trabalho, com cada afirmação ligada a uma fonte."
     },
     "blog_best_free_opusclip_alternative": {
@@ -90,9 +90,9 @@
       "description": "Quando um clipper de código aberto e auto-hospedado é melhor do que uma ferramenta baseada em créditos."
     },
     "blog_supoclip_vs_supo_live": {
-      "label": "SupoClip vs supo.live",
+      "label": "Easyclip vs supo.live",
       "eyebrow": "Comparação",
-      "title": "SupoClip vs supo.live: controle de código aberto",
+      "title": "Easyclip vs supo.live: controle de código aberto",
       "description": "Compare auto-hospedagem, clipping com IA e fluxos de edição antes de escolher uma ferramenta de vídeo."
     },
     "sign_up": {
@@ -137,14 +137,14 @@
     "startClipping": "Comece a criar clipes",
     "useHosted": "Usar o app hospedado",
     "viewSource": "Ver o código",
-    "appStoreAria": "Baixe o SupoClip na App Store",
+    "appStoreAria": "Baixe o Easyclip na App Store",
     "appStoreAlt": "Baixar na App Store",
     "chips": {
       "crop": "Corte automático 9:16",
       "captions": "Legendas sincronizadas",
       "virality": "Pontuação de viralidade"
     },
-    "productHuntAlt": "SupoClip - Clipper de vídeo com IA de código aberto: vídeos longos em shorts virais | Product Hunt",
+    "productHuntAlt": "Easyclip - Clipper de vídeo com IA de código aberto: vídeos longos em shorts virais | Product Hunt",
     "player": {
       "source": "youtube.com · vídeo longo de origem",
       "clipsFound": "{count} clipes encontrados",
@@ -257,7 +257,7 @@
   "guides": {
     "eyebrow": "Guias e comparações",
     "title": "Aprenda o fluxo completo de clipping",
-    "body": "Páginas práticas e com fontes para escolher um clipper de vídeo, auto-hospedar o SupoClip e transformar gravações longas em conteúdo curto.",
+    "body": "Páginas práticas e com fontes para escolher um clipper de vídeo, auto-hospedar o Easyclip e transformar gravações longas em conteúdo curto.",
     "read": "Ler o guia"
   },
   "cta": {

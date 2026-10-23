@@ -7,6 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, RedirectResponse
 from starlette.background import BackgroundTask
 from ...media_storage import MediaStorage, is_s3, media_work
+from ...media.branding import save_branding
 from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import EventSourceResponse
 from pathlib import Path
@@ -233,8 +234,11 @@ def _merge_task_source_metadata(
     add_subtitles: Any = None,
     cleanup_settings: Dict[str, Any] | None = None,
     sound_settings: Dict[str, Any] | None = None,
+    branding: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     merged = dict(existing or {})
+    if branding:
+        merged["branding"] = branding
 
     if isinstance(source_url, str) and source_url:
         merged["url"] = source_url
@@ -446,6 +450,11 @@ async def create_task(request: Request, db: AsyncSession = Depends(get_db)):
                         add_subtitles=add_subtitles,
                         cleanup_settings=cleanup_settings,
                         sound_settings=data,
+                        branding=save_branding(
+                            Path(runtime_config.temp_dir) / "branding",
+                            task_id,
+                            data.get("branding"),
+                        ),
                     ),
                     db=db,
                 )

@@ -86,7 +86,7 @@
     "signIn": "Sign In",
     "title": "Social accounts",
     "unavailable": "Publishing to YouTube, TikTok and Instagram isn't available on your account yet.",
-    "intro": "Connect the accounts you post to. Publish clips straight from a task page, schedule them, and let SupoClip learn from how they perform.",
+    "intro": "Connect the accounts you post to. Publish clips straight from a task page, schedule them, and let Easyclip learn from how they perform.",
     "loadError": "Failed to load social accounts",
     "connectedNotice": "{label} connected.",
     "connectedAs": "{label} connected as {account}.",
