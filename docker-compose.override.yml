@@ -24,6 +24,10 @@ services:
       - AUDIO_LIBRARY_DIR=/app/audio
       # Keep YouTube source videos so Open in editor skips the re-download.
       - KEEP_SOURCE_VIDEOS=${KEEP_SOURCE_VIDEOS:-true}
+      # Long videos (up to MAX_VIDEO_DURATION=4 h): 6 h to process, and the
+      # stuck-task sweep waits longer than that.
+      - WORKER_JOB_TIMEOUT_SECONDS=${WORKER_JOB_TIMEOUT_SECONDS:-21600}
+      - PROCESSING_TASK_TIMEOUT_SECONDS=${PROCESSING_TASK_TIMEOUT_SECONDS:-28800}
     volumes:
       - ./cookies:/app/cookies
       - ./audio:/app/audio
@@ -49,6 +53,10 @@ services:
       - AUDIO_LIBRARY_DIR=/app/audio
       # Keep YouTube source videos so Open in editor skips the re-download.
       - KEEP_SOURCE_VIDEOS=${KEEP_SOURCE_VIDEOS:-true}
+      # Long videos (up to MAX_VIDEO_DURATION=4 h): 6 h to process, and the
+      # stuck-task sweep waits longer than that.
+      - WORKER_JOB_TIMEOUT_SECONDS=${WORKER_JOB_TIMEOUT_SECONDS:-21600}
+      - PROCESSING_TASK_TIMEOUT_SECONDS=${PROCESSING_TASK_TIMEOUT_SECONDS:-28800}
     volumes:
       - ./cookies:/app/cookies
       - ./audio:/app/audio

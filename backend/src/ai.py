@@ -49,6 +49,8 @@ ANALYSIS_WINDOW_SEGMENT_TARGET = "3-5"
 # Wall-clock budget for all windows together. Each window additionally keeps
 # its own TRANSCRIPT_ANALYSIS_TIMEOUT_SECONDS budget once it starts running.
 ANALYSIS_TOTAL_TIMEOUT_SECONDS = 1800
+# Per concurrent round of windows, used when that beats the total above.
+ANALYSIS_ROUND_BUDGET_SECONDS = 300
 RERANK_TIMEOUT_SECONDS = 240
 CANDIDATE_DEDUPE_OVERLAP_RATIO = 0.5
 # How far a model timestamp may sit from a transcript line boundary and still be
@@ -1380,8 +1382,14 @@ async def _analyze_transcript_windows(
             return result.output
 
     tasks = [asyncio.create_task(run_window(window)) for window in windows]
+    # Long sources (multi-hour sermons) have many windows; give each concurrent
+    # round its own allowance so later windows are not dropped for time.
+    budget = max(
+        ANALYSIS_TOTAL_TIMEOUT_SECONDS,
+        math.ceil(len(windows) / ANALYSIS_WINDOW_CONCURRENCY) * ANALYSIS_ROUND_BUDGET_SECONDS,
+    )
     try:
-        _, pending = await asyncio.wait(tasks, timeout=ANALYSIS_TOTAL_TIMEOUT_SECONDS)
+        _, pending = await asyncio.wait(tasks, timeout=budget)
     except asyncio.CancelledError:
         for task in tasks:
             task.cancel()
@@ -1392,7 +1400,7 @@ async def _analyze_transcript_windows(
             "%d of %d analysis windows exceeded the %ss budget",
             len(pending),
             len(windows),
-            ANALYSIS_TOTAL_TIMEOUT_SECONDS,
+            budget,
         )
         for task in pending:
             task.cancel()

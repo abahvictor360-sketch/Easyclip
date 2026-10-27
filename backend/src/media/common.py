@@ -154,6 +154,10 @@ _EMOJI_SUPPORT_CACHE: Optional[bool] = None
 
 FACE_PRESENCE_MIN_AREA = 0.002
 
+# Person (body) fallback for wide shots whose faces are too small to detect.
+PERSON_DETECT_UPSCALE = 2.0
+PERSON_DETECT_MIN_WEIGHT = 0.5
+
 FACE_RATE_WINDOW = 2.0
 
 FACE_PRESENCE_RATE = 0.25

@@ -14,6 +14,8 @@ import subprocess
 import tempfile
 from .common import (
     FACE_PRESENCE_MIN_AREA,
+    PERSON_DETECT_MIN_WEIGHT,
+    PERSON_DETECT_UPSCALE,
     FACE_PRESENCE_RATE,
     FACE_RATE_WINDOW,
     KENBURNS_MIN_SECONDS,
@@ -685,6 +687,38 @@ def _open_face_detectors():
     return open_yunet_detector(), open_haar_cascade()
 
 
+_PEOPLE_DETECTOR = None
+
+
+def _detect_person_center_x(frame_bgr) -> Optional[float]:
+    """Centre x (frame px) of the clearest standing person, or None.
+
+    Fallback for wide stage shots where the speaker's face is too small for the
+    face detector at analysis resolution. The frame is enlarged so a full body
+    fills the HOG detector's 64x128 window.
+    """
+    global _PEOPLE_DETECTOR
+    if _PEOPLE_DETECTOR is None:
+        _PEOPLE_DETECTOR = cv2.HOGDescriptor()
+        _PEOPLE_DETECTOR.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+    scale = PERSON_DETECT_UPSCALE
+    enlarged = cv2.resize(frame_bgr, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
+    try:
+        rects, weights = _PEOPLE_DETECTOR.detectMultiScale(
+            enlarged, winStride=(8, 8), padding=(8, 8), scale=1.05
+        )
+    except cv2.error:
+        return None
+    if len(rects) == 0:
+        return None
+    weights = np.asarray(weights).reshape(-1)
+    best = max(range(len(rects)), key=lambda i: float(weights[i]) * float(rects[i][3]))
+    if float(weights[best]) < PERSON_DETECT_MIN_WEIGHT:
+        return None
+    x, _, w, _ = rects[best]
+    return (float(x) + float(w) / 2.0) / scale
+
+
 def _detect_face_boxes(frame_bgr, face_detector, haar) -> List[Tuple[float, float, float, float]]:
     """All face boxes (x, y, w, h) in a frame, largest first. Frame-pixel coordinates."""
     h, w = frame_bgr.shape[:2]
@@ -816,7 +850,12 @@ def analyze_vertical_clip(
             t = idx / sample_fps
             boxes = _detect_face_boxes(frame, face_detector, haar)
             if not boxes:
-                track.append((t, None, 0.0))
+                # Wide shots: follow the speaker's body when the face is too small.
+                person_x = _detect_person_center_x(frame)
+                if person_x is not None:
+                    track.append((t, person_x * scale_x, FACE_PRESENCE_MIN_AREA))
+                else:
+                    track.append((t, None, 0.0))
                 face_samples.append((t, []))
             else:
                 fx, fy, fw, fh = max(boxes, key=lambda box: box[2] * box[3])
@@ -862,6 +901,7 @@ def build_crop_trajectory(
     deadzone_frac: float = 0.05,
     smooth_time: float = 0.9,
     max_pan_speed_frac: float = 0.4,
+    scene_cuts: Optional[List[float]] = None,
 ) -> List[Tuple[float, int]]:
     """Turn a raw face-centre track into a smooth, eased crop-x trajectory.
 
@@ -871,6 +911,10 @@ def build_crop_trajectory(
     and no mechanical ramp-then-stop feel. A deadzone keeps the frame still for
     small head movements; a median pre-filter removes detection spikes. Returns
     [] when there isn't enough signal to track.
+
+    With ``scene_cuts``, every camera shot is filled and smoothed on its own and
+    the crop jumps at each cut instead of gliding across it (which would show
+    empty stage while it caught up with the speaker's new position).
     """
     if not track:
         return []
@@ -884,24 +928,43 @@ def build_crop_trajectory(
     if detected < max(3, len(centers) // 5):
         return []  # too sparse to trust — caller falls back to a static crop
 
-    # Gap-fill missing detections: forward fill, then back fill.
-    last: Optional[float] = None
-    for i in range(len(centers)):
-        if centers[i] is None:
-            centers[i] = last
-        else:
-            last = centers[i]
-    last = None
-    for i in range(len(centers) - 1, -1, -1):
-        if centers[i] is None:
-            centers[i] = last
-        else:
-            last = centers[i]
+    cuts = sorted(c for c in (scene_cuts or []) if times[0] < c <= times[-1])
+    shot_of = [sum(1 for c in cuts if c <= t) for t in times]
+    shot_ranges: List[Tuple[int, int]] = []
+    start = 0
+    for i in range(1, len(times) + 1):
+        if i == len(times) or shot_of[i] != shot_of[start]:
+            shot_ranges.append((start, i))
+            start = i
+
+    # Gap-fill missing detections inside each shot (forward, then back); a shot
+    # with no detections at all borrows from its neighbours afterwards.
+    def fill(lo: int, hi: int) -> None:
+        last: Optional[float] = None
+        for i in range(lo, hi):
+            if centers[i] is None:
+                centers[i] = last
+            else:
+                last = centers[i]
+        last = None
+        for i in range(hi - 1, lo - 1, -1):
+            if centers[i] is None:
+                centers[i] = last
+            else:
+                last = centers[i]
+
+    for lo, hi in shot_ranges:
+        fill(lo, hi)
+    fill(0, len(centers))
     if any(c is None for c in centers):
         return []
 
     desired = [min(max(c - crop_w / 2.0, 0.0), float(max_x)) for c in centers]
-    desired = _median_filter(desired, window=3)
+    desired = [
+        value
+        for lo, hi in shot_ranges
+        for value in _median_filter(desired[lo:hi], window=3)
+    ]
 
     deadzone = max(2.0, crop_w * deadzone_frac)
     max_speed = max(1.0, width * max_pan_speed_frac)
@@ -912,7 +975,9 @@ def build_crop_trajectory(
     # past the deadzone, so the spring isn't chasing sub-deadzone jitter.
     targets: List[float] = []
     anchor = desired[0]
-    for d in desired:
+    for i, d in enumerate(desired):
+        if i > 0 and shot_of[i] != shot_of[i - 1]:
+            anchor = d  # new camera shot: frame the subject where they are now
         if d - anchor > deadzone:
             anchor = d - deadzone
         elif anchor - d > deadzone:
@@ -924,6 +989,10 @@ def build_crop_trajectory(
     cur = float(targets[0])
     vel = 0.0
     for i, tgt in enumerate(targets):
+        if i > 0 and shot_of[i] != shot_of[i - 1]:
+            cur, vel = float(tgt), 0.0  # hard cut: no glide across shots
+            eased.append(cur)
+            continue
         dt = (times[i] - times[i - 1]) if i > 0 else 0.0
         if dt <= 0:
             eased.append(cur)
@@ -946,14 +1015,23 @@ def build_crop_trajectory(
 
     # Final low-pass pass: removes residual velocity steps so the piecewise-
     # linear keyframes read as continuous, fluid motion.
-    eased = smooth_values(eased, window=5)
+    eased = [
+        value
+        for lo, hi in shot_ranges
+        for value in smooth_values(eased[lo:hi], window=5)
+    ]
 
     # Keep keyframes fine enough that linear interpolation tracks the smooth
     # curve without visible faceting.
     def simplify(tol: float) -> List[Tuple[float, int]]:
         keys: List[Tuple[float, int]] = [(0.0, int(round(eased[0])))]
         for i in range(1, len(eased)):
-            if abs(eased[i] - keys[-1][1]) >= tol:
+            if shot_of[i] != shot_of[i - 1]:
+                # Hold the old framing up to the cut, then switch at the cut.
+                cut = cuts[shot_of[i] - 1]
+                keys.append((max(keys[-1][0], cut - 0.001), int(round(eased[i - 1]))))
+                keys.append((cut, int(round(eased[i]))))
+            elif abs(eased[i] - keys[-1][1]) >= tol:
                 keys.append((times[i], int(round(eased[i]))))
         if keys[-1][0] < times[-1]:
             keys.append((times[-1], int(round(eased[-1]))))
@@ -1191,7 +1269,7 @@ def build_vertical_filter_plan(
     track, scene_cuts = analyzed[0], analyzed[1]
     face_samples = analyzed[2] if len(analyzed) > 2 else []
 
-    keys = build_crop_trajectory(track, width, crop_w) if track else []
+    keys = build_crop_trajectory(track, width, crop_w, scene_cuts=scene_cuts) if track else []
     moving = bool(keys and trajectory_has_movement(keys, crop_w))
     static_x = 0
     if moving:
