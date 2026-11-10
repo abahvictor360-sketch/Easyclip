@@ -246,12 +246,6 @@ export default function LandingPage() {
             >
               {t("nav.pricing")}
             </a>
-            <a
-              href="#open-source"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {t("nav.openSource")}
-            </a>
             <Link
               href="/blog"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -325,13 +319,6 @@ export default function LandingPage() {
                 className="block rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               >
                 {t("nav.pricing")}
-              </a>
-              <a
-                href="#open-source"
-                onClick={() => setMobileNavOpen(false)}
-                className="block rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-              >
-                {t("nav.openSource")}
               </a>
               <Link
                 href="/blog"
