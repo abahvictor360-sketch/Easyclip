@@ -64,6 +64,7 @@ import { cn } from "@/lib/utils";
 import { FontSelectOption, type FontOption } from "@/components/font-select-option";
 import { CaptionStylePreview } from "@/components/caption-preview";
 import { ClipPostList, ClipPublishButton, useSocialPostToasts } from "@/components/clip-publisher";
+import { AssignSendButton } from "@/components/assign-send-button";
 import {
   ACTIVE_POST_STATUSES,
   type SocialConnection,
@@ -820,13 +821,16 @@ export default function TaskPage() {
         onDelete={readOnly ? undefined : () => { if (focusedClip) { setDeletingClipId(focusedClip.id); setFocusIndex(null); } }}
         hookTypeLabel={getHookTypeLabel}
         actions={focusedClip && task?.status === "completed" ? (
-          <ClipPublishButton
-            taskId={task.id}
-            clip={focusedClip}
-            connections={socialConnections}
-            providers={socialProviders}
-            onChanged={loadSocialPosts}
-          />
+          <>
+            <ClipPublishButton
+              taskId={task.id}
+              clip={focusedClip}
+              connections={socialConnections}
+              providers={socialProviders}
+              onChanged={loadSocialPosts}
+            />
+            {!readOnly && <AssignSendButton clip={focusedClip} />}
+          </>
         ) : null}
       >
         {focusedClip && (

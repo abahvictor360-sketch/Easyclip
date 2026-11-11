@@ -169,6 +169,11 @@ class Config:
         self.discord_feedback_webhook_url = self._get_optional_env("DISCORD_FEEDBACK_WEBHOOK_URL")
         self.discord_sales_webhook_url = self._get_optional_env("DISCORD_SALES_WEBHOOK_URL")
 
+        # Assign (the Postiz-based scheduler). When both are set, clips can be sent
+        # to Assign as drafts from the clip view.
+        self.assign_base_url = (self._get_optional_env("ASSIGN_BASE_URL") or "").rstrip("/")
+        self.assign_api_key = self._get_optional_env("ASSIGN_API_KEY")
+
         # Social publishing. Each provider needs an OAuth app registered by the
         # operator; users then connect their own accounts through that app.
         self.youtube_oauth_client_id = self._get_optional_env(
