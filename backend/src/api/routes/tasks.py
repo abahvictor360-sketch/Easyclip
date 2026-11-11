@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 from starlette.background import BackgroundTask
 from ...media_storage import MediaStorage, is_s3, media_work
 from ...media.branding import save_branding
+from ...remote_video import get_remote_video_info, is_facebook_url
 from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import EventSourceResponse
 from pathlib import Path
@@ -86,6 +87,43 @@ async def _preflight_youtube_source(url: str, duration_limit: int) -> Dict[str, 
             },
         )
     return metadata
+
+
+async def _preflight_facebook_source(url: str, duration_limit: int) -> Dict[str, Any]:
+    """Read a Facebook video's title and length so its minutes are charged up front."""
+    try:
+        info = await asyncio.wait_for(run_in_thread(get_remote_video_info, url), timeout=45)
+        duration = float(info.get("duration") or 0)
+        if not math.isfinite(duration) or duration <= 0:
+            raise ValueError("Invalid video duration")
+    except Exception as exc:
+        logger.warning("Facebook preflight failed for %s: %s", url, exc)
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "code": "VIDEO_METADATA_UNAVAILABLE",
+                "message": (
+                    "We couldn't open this Facebook video. Check that it is public "
+                    "(private and group videos need a Facebook cookies file), or "
+                    "download it and upload the file. No minutes were used."
+                ),
+            },
+        ) from None
+
+    if duration > duration_limit:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "code": "VIDEO_TOO_LONG",
+                "message": (
+                    f"This video is {duration / 60:.1f} minutes long. Videos can be "
+                    f"up to {duration_limit / 60:g} minutes. No minutes were used."
+                ),
+                "duration_seconds": duration,
+                "max_duration_seconds": duration_limit,
+            },
+        )
+    return {"title": info.get("title"), "duration": duration}
 
 
 async def _preflight_upload_source(url: str, user_id: str, duration_limit: int) -> float:
@@ -414,6 +452,12 @@ async def create_task(request: Request, db: AsyncSession = Depends(get_db)):
             )
             source_title = source_title or metadata.get("title") or "YouTube Video"
             duration_seconds = float(metadata["duration"])
+        elif is_facebook_url(raw_source["url"]):
+            metadata = await _preflight_facebook_source(
+                raw_source["url"], billing["max_upload_duration_seconds"]
+            )
+            source_title = source_title or metadata.get("title") or "Facebook Video"
+            duration_seconds = metadata["duration"]
         else:
             duration_seconds = await _preflight_upload_source(
                 raw_source["url"], user_id, billing["max_upload_duration_seconds"]

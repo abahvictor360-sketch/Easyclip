@@ -9,6 +9,7 @@ services:
     # YouTube bot check: PO tokens from the pot service, plus optional cookies.txt.
     environment:
       - YTDLP_COOKIES_FILE=/app/cookies/youtube.txt
+      - FACEBOOK_COOKIES_FILE=/app/cookies/facebook.txt
       - YTDLP_POT_PROVIDER_URL=http://pot:4416
       - YTDLP_PLAYER_CLIENT=mweb
       - CLIP_MIN_SECONDS=${CLIP_MIN_SECONDS:-90}
@@ -38,6 +39,7 @@ services:
   worker:
     environment:
       - YTDLP_COOKIES_FILE=/app/cookies/youtube.txt
+      - FACEBOOK_COOKIES_FILE=/app/cookies/facebook.txt
       - YTDLP_POT_PROVIDER_URL=http://pot:4416
       - YTDLP_PLAYER_CLIENT=mweb
       - CLIP_MIN_SECONDS=${CLIP_MIN_SECONDS:-90}

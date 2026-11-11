@@ -20,6 +20,8 @@ class Config:
         self.youtube_data_api_key = self._get_runtime_setting("YOUTUBE_DATA_API_KEY")
         # Optional Netscape cookies.txt for yt-dlp when YouTube asks to sign in.
         self.ytdlp_cookies_file = self._get_optional_env("YTDLP_COOKIES_FILE")
+        # Optional cookies.txt for private or group Facebook videos.
+        self.facebook_cookies_file = self._get_optional_env("FACEBOOK_COOKIES_FILE")
         # Optional bgutil PO token server and YouTube client, used without cookies.
         self.ytdlp_pot_provider_url = self._get_optional_env("YTDLP_POT_PROVIDER_URL")
         self.ytdlp_player_client = self._get_optional_env("YTDLP_PLAYER_CLIENT")

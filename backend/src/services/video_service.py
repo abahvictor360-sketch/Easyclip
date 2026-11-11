@@ -42,6 +42,7 @@ from ..clip_source_map import (
 )
 from ..ai import get_most_relevant_parts_by_transcript
 from ..config import get_config
+from ..remote_video import download_remote_video, is_facebook_url
 from ..media_storage import MediaStorage
 from ..media.ffmpeg import cap_video_short_side, ffprobe_duration
 
@@ -129,7 +130,12 @@ class VideoService:
 
     @staticmethod
     def resolve_local_video_path(url: str) -> Path:
-        """Resolve uploaded-video references without exposing server filesystem paths."""
+        """Resolve uploaded-video references without exposing server filesystem paths.
+
+        Facebook links are downloaded on first use (blocking; call it in a thread).
+        """
+        if is_facebook_url(url):
+            return download_remote_video(url)
         if url.startswith(UPLOAD_URL_PREFIX):
             if url.startswith("upload://s3/"):
                 storage = MediaStorage()
@@ -432,9 +438,9 @@ class VideoService:
         video_id = get_youtube_video_id(url)
         if video_id:
             return "youtube"
-        if url.startswith(UPLOAD_URL_PREFIX):
+        if url.startswith(UPLOAD_URL_PREFIX) or is_facebook_url(url):
             return "video_url"
-        raise ValueError("Only YouTube URLs or upload:// references are supported")
+        raise ValueError("Only YouTube or Facebook links, or upload:// references, are supported")
 
     @staticmethod
     async def process_video_complete(
@@ -497,7 +503,7 @@ class VideoService:
             else:
                 video_path = (
                     await run_in_thread(VideoService.resolve_local_video_path, url)
-                    if url.startswith("upload://s3/")
+                    if url.startswith("upload://s3/") or is_facebook_url(url)
                     else VideoService.resolve_local_video_path(url)
                 )
                 if not video_path.exists():
