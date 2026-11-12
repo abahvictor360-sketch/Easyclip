@@ -11,7 +11,8 @@ services:
       - YTDLP_COOKIES_FILE=/app/cookies/youtube.txt
       - FACEBOOK_COOKIES_FILE=/app/cookies/facebook.txt
       - YTDLP_POT_PROVIDER_URL=http://pot:4416
-      - YTDLP_PLAYER_CLIENT=mweb
+      # Empty = yt-dlp default clients; mweb streams started returning 403 (2026-11).
+      - YTDLP_PLAYER_CLIENT=${YTDLP_PLAYER_CLIENT:-}
       - CLIP_MIN_SECONDS=${CLIP_MIN_SECONDS:-90}
       - CLIP_MAX_SECONDS=${CLIP_MAX_SECONDS:-180}
       - CLIP_IDEAL_MIN_SECONDS=${CLIP_IDEAL_MIN_SECONDS:-100}
@@ -41,7 +42,8 @@ services:
       - YTDLP_COOKIES_FILE=/app/cookies/youtube.txt
       - FACEBOOK_COOKIES_FILE=/app/cookies/facebook.txt
       - YTDLP_POT_PROVIDER_URL=http://pot:4416
-      - YTDLP_PLAYER_CLIENT=mweb
+      # Empty = yt-dlp default clients; mweb streams started returning 403 (2026-11).
+      - YTDLP_PLAYER_CLIENT=${YTDLP_PLAYER_CLIENT:-}
       - CLIP_MIN_SECONDS=${CLIP_MIN_SECONDS:-90}
       - CLIP_MAX_SECONDS=${CLIP_MAX_SECONDS:-180}
       - CLIP_IDEAL_MIN_SECONDS=${CLIP_IDEAL_MIN_SECONDS:-100}
