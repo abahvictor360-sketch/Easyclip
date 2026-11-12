@@ -51,10 +51,16 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
+YOUTUBE_PREFLIGHT_TIMEOUT_SECONDS = 60
+
+
 async def _preflight_youtube_source(url: str, duration_limit: int) -> Dict[str, Any]:
     """Check duration before creating a task or consuming a generation."""
     try:
-        metadata = await asyncio.wait_for(async_get_youtube_video_info(url), timeout=15)
+        # PO-token generation and YouTube rate-limit retries can take well over 15 s.
+        metadata = await asyncio.wait_for(
+            async_get_youtube_video_info(url), timeout=YOUTUBE_PREFLIGHT_TIMEOUT_SECONDS
+        )
         duration = (metadata or {}).get("duration")
         if isinstance(duration, bool) or not isinstance(duration, (int, float)):
             raise ValueError("Missing video duration")
